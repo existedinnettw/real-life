@@ -1,0 +1,31 @@
+
+.header{
+    position: fixed;
+    top:0;
+    left:0;
+    text-align: left;
+    z-index: 90;
+}
+.navBtn{
+    margin: 1rem;
+    color:skyblue;
+}
+/*
+display:flex;
+position: fixed;
+*/
+.navBar{
+    display: flex;
+    z-index: 99;
+}
+
+.option {
+    margin: .3rem;
+    font-weight: 500;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 0.5rem 0.5rem;
+    border-color: gray;
+    border-style: solid;
+
+}

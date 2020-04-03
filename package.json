@@ -2,15 +2,45 @@
   "name": "memo-clock",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
+  "main": "src/start.js",
+  "build": {
+    "appId": "com.electron.memo-clock",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "category": "your.app.category.type",
+      "iconUrl": "path-to-icon.png"
+    },
+    "mac": {
+      "category": "your.app.category.type",
+      "iconUrl": "path-to-icon.png"
+    }
+  },
   "dependencies": {
+    "@ant-design/icons": "^4.0.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.0.4",
+    "bootstrap": "^4.4.1",
+    "electron": "^8.1.1",
+    "electron-is-dev": "^1.1.0",
+    "lodash": "^4.17.15",
     "react": "^16.13.1",
+    "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
+    "react-simple-sidenav": "^1.0.1"
   },
   "scripts": {
+    "@comment electron": " originally it use electron .",
+    "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -30,5 +60,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron-builder": "^22.4.1",
+    "electron-reload": "^1.5.0",
+    "nodemon": "^2.0.2"
   }
 }

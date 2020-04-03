@@ -1,0 +1,81 @@
+*{
+    text-align: center;
+}
+
+.missionStr{
+    font-size: 3rem;
+    margin: 1rem 0 .5rem 0;
+}
+
+.timeStr{
+    margin: 1.5rem 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.vegImg{
+    max-width: 60%;
+    height: auto;
+    margin: .5rem 0 1.5rem 0;
+}
+
+.lowerBtn{
+    width: 20%;
+    margin: .5rem 0 2rem 0;
+}
+
+
+/**************/
+.minuteSelect{
+    /*font-size: 2rem;*/
+    display: inline;
+    width: 5rem;
+    text-align-last: center;
+}
+.selectOpt{
+    text-align: center;
+    text-align-last: center;
+}
+.remindText{
+    font-size: 1.5rem;    
+}
+.tabsBox{
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: lightgray;
+    padding: 1rem;
+    width: 75%;
+    margin: 0 auto;
+    font-size: 1.5rem;
+}
+.workOption{
+    text-align: left;
+}
+
+
+
+.compContainer{
+    position: sticky;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    right: 0;
+    top:0;
+    bottom: 0;
+    min-width: 700px;
+    min-height: 500px;
+    overflow: auto;
+}
+
+/* .compContainer{
+    position: fixed;
+    top:0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+
+    min-width: 700px;
+    min-height: 500px;
+    overflow: auto;
+} */

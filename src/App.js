@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import { Route, Switch, BrowserRouter } from 'react-router-dom'
+import NavBar from './components/NavBar'
+import WhiteBoard from './page/WhiteBoard'
+import Mission from './page/Mission'
+import Analysis from './page/Analysis'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class Layout extends Component {
+    //an hoc
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
+    render() {
+        return (
+            <div>
+                <NavBar style={{ zIndex: 99 }} />
+                {this.props.children}
+
+            </div>
+        )
+    }
 }
 
-export default App;
+class Routes extends Component {
+    render() {
+        return (
+            <Layout>
+                <Switch>
+                    <Route path="/" exact component={Mission} />
+                    <Route path="/whiteboard/" component={WhiteBoard} />
+                    <Route path="/mission/" component={Mission} />
+                    <Route path='/analysis/' component={Analysis} />
+                </Switch>
+            </Layout>
+        )
+    }
+}
+
+class App extends Component {
+    render() {
+        return (
+            <BrowserRouter>
+                <Routes />
+            </BrowserRouter>
+        )
+    }
+}
+export default App
