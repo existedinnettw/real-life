@@ -11,6 +11,7 @@ import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
 const { Option } = Select
 const { TabPane } = Tabs;
 const electron = window.require('electron');
+const currentWindow = electron.remote.getCurrentWindow()
 const fs = electron.remote.require('fs');
 
 var remB = 16
@@ -29,6 +30,7 @@ class Mission extends Component {
     componentDidMount() {
         // let todayWkDataRd = JSON.parse(fs.readFileSync('./src/page/todayWork.json', 'utf8'));
         // this.setState({ todayWkData: todayWkDataRd })
+        currentWindow.setSize(1000,1000)
     }
     handleDateChange(date, dateString) {
         this.setState({ dueMonth: date })

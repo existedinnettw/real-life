@@ -1,11 +1,11 @@
 {
-  "name": "memo-clock",
+  "name": "real-life",
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
   "main": "src/start.js",
   "build": {
-    "appId": "com.electron.memo-clock",
+    "appId": "com.electron.real-life",
     "directories": {
       "buildResources": "assets"
     },
@@ -36,7 +36,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "react-simple-sidenav": "^1.0.1"
+    "react-simple-sidenav": "^1.0.1",
+    "recharts": "^1.8.5"
   },
   "scripts": {
     "@comment electron": " originally it use electron .",

@@ -9,9 +9,13 @@ const BrowserWindow = electron.BrowserWindow
 let mainWindow
 
 function createWindow() {
+  //https://www.electronjs.org/docs/api/browser-window
   mainWindow = new BrowserWindow({
     width: 800,
+    minWidth:200,
     height: 600,
+    minHeight: 50,
+    //alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -26,6 +30,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  //mainWindow.setAlwaysOnTop(true, 'screen');
 }
 
 app.on('ready', createWindow)

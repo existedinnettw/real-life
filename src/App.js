@@ -27,7 +27,7 @@ class Routes extends Component {
         return (
             <Layout>
                 <Switch>
-                    <Route path="/" exact component={Mission} />
+                    <Route path="/" exact component={WhiteBoard} />
                     <Route path="/whiteboard/" component={WhiteBoard} />
                     <Route path="/mission/" component={Mission} />
                     <Route path='/analysis/' component={Analysis} />

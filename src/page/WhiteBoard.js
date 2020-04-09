@@ -16,6 +16,7 @@ import Tab from 'react-bootstrap/Tab'
 const electron = window.require('electron');
 const fs = electron.remote.require('fs');
 const ipcRenderer = electron.ipcRenderer;
+const currentWindow = electron.remote.getCurrentWindow()
 var remB = 16 //getComputedStyle(document.documentElement).fontSize //this is string
 
 class WhiteBoard extends Component {
@@ -62,11 +63,13 @@ class WhiteBoard extends Component {
         this.setState({ todayWkData: todayWkDataRd })
 
         //window.addEventListener("resize", this.updateDimensions);
+        
     }
     componentWillUnmount() {
         clearInterval(this.state.tickIntervalId);
         //https://stackoverflow.com/questions/38564080/remove-event-listener-on-unmount-react
         //window.removeEventListener("resize", this.updateDimensions);
+        this.rollBackNormalWin()
     }
     render_wb() {
         let timPst = new Date()
@@ -82,9 +85,9 @@ class WhiteBoard extends Component {
             <div>
                 <Container className=' compContainer' >
                     <Row className="h-100 align-items-center mx-auto">
-                        <Col xs={12} className='timeStr ' >I just wanna veg...</Col>
+                        <Col xs={12} className='time-str ' >I just wanna veg...</Col>
                         <Col xs={12} className=''><img className="vegImg img-thumbnail img-fluid" src={veg_img} /></Col>
-                        <Col xs={12} className='timeStr '>{timStr}</Col>
+                        <Col xs={12} className='time-str '>{timStr}</Col>
                         <Col xs={12} className=''>
                             <Button className='lowerBtn' onClick={(e) => this.setState({ workState: 'WB_choice' })}>work</Button>
                         </Col>
@@ -132,6 +135,7 @@ class WhiteBoard extends Component {
         this.setState({ workState: 'WB_start' })
         this.setState({ timNow: new Date() })
         this.startClockTime = new Date()
+        
     }
     render_choice() {
         let timeArr = _.range(5, 95, 5);
@@ -140,7 +144,7 @@ class WhiteBoard extends Component {
             <div>
                 <Container className='compContainer'>
                     <Row className="h-100 align-items-center">
-                        <Col xs={12} className='timeStr'>Today work</Col>
+                        <Col xs={12} className='time-str'>Today work</Col>
                         <Col xs={12} >
                             <div className="tabsBox ">
                                 <Tabs defaultActiveKey={this.missionType} id="work-select-tab" style={{ marginBottom: remB }}
@@ -188,16 +192,27 @@ class WhiteBoard extends Component {
         let timeStr = `${this.state.choosedTime - leftTime} min left`
         return (
             <div>
-                <Container className='compContainer'>
+                <Container className='compContainer' style={{minWidth:50,minHeight:50}}>
                     <Row className="h-100 align-items-center">
-                        <Col xs={12} className='missionStr'>{missionStr}</Col>
-                        <Col xs={12} className='timeStr'>{timeStr}</Col>
+                        <Col xs={12} className='mission-str'>{missionStr}</Col>
+                        <Col xs={12} className='count-time-str'>{timeStr}</Col>
                     </Row>
                 </Container>
             </div>
         )
     }
+    rollBackNormalWin(){
+        currentWindow.setAlwaysOnTop(false, 'screen');
+        currentWindow.setSize(800,600)
+    }
     render() {
+        if(this.state.workState==='WB_start'){
+            currentWindow.setAlwaysOnTop(true, 'screen');
+            currentWindow.setSize(300,150)
+        }else{
+            this.rollBackNormalWin()
+        }
+
         if (this.state.workState === 'WB') {
             return this.render_wb()
         } else if (this.state.workState === 'WB_choice') {
