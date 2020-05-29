@@ -42,9 +42,9 @@
   "scripts": {
     "@comment electron": " originally it use electron .",
     "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -65,6 +65,9 @@
   "devDependencies": {
     "electron-builder": "^22.4.1",
     "electron-reload": "^1.5.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "react-app-rewired": "^2.1.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }
