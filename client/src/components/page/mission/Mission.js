@@ -5,19 +5,20 @@ import Carousel from 'react-bootstrap/Carousel'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'antd/dist/antd.css'
 import './mission.css'
-import { PlusSquareOutlined, PlusOutlined, DeleteOutlined, CarryOutOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, CarryOutOutlined, CloseOutlined } from '@ant-design/icons';
 import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
+import { purple, grey } from '@ant-design/colors';
+import { Safe_el, rm } from 'util/electronUtil'
+import { remB } from 'util/constant'
+import { getEvents, addEvent } from 'api/event'
+import { motion } from "framer-motion"
+import Background from './background.jpg';
 
 const { Option } = Select
 const { TabPane } = Tabs;
-const electron = window.require('electron');
-const currentWindow = electron.remote.getCurrentWindow()
-const fs = electron.remote.require('fs');
-
-var remB = 16
 
 
-class Mission extends Component {
+class RInputRow extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -27,28 +28,25 @@ class Mission extends Component {
         }
         this.handleDateChange = this.handleDateChange.bind(this);
     }
-    componentDidMount() {
-        // let todayWkDataRd = JSON.parse(fs.readFileSync('./src/page/todayWork.json', 'utf8'));
-        // this.setState({ todayWkData: todayWkDataRd })
-        currentWindow.setSize(1000,1000)
-    }
     handleDateChange(date, dateString) {
         this.setState({ dueMonth: date })
     }
-    rInputRow() {
+
+    //render place for input
+    render() {
         return (
             <Row justify='left' gutter={{ xs: 4, sm: 16, md: 16, lg: 3 * remB }}>
                 <Col>
                     <Input placeholder="work name" />
                 </Col>
                 <Col >
-                    <DatePicker className="inputOption" onChange={this.handleDateChange} />
+                    <DatePicker placeholder="due date" className="inputOption" onChange={this.handleDateChange} />
                 </Col>
                 <Col>
                     <Select
                         showSearch
                         style={{ width: 80 }}
-                        placeholder="Select work types"
+                        placeholder="work types"
                         className="inputOption"
                     >
                         <Option value="jack">Jack</Option>
@@ -68,85 +66,28 @@ class Mission extends Component {
                         <Option value="tom">Tom</Option>
                     </Select>
                 </Col>
-
+                <Col style={{ marginBottom: 1.5 * remB }} >
+                    <Button onClick icon={<PlusOutlined style={{ margin: 'auto', display: 'block' }} />}></Button>
+                </Col>
             </Row>
         )
     }
-    rScheCard(titleStr) {
-        //render schedule card
-        return (
-            <Card title={titleStr} style={{ width: '90%' }}>
-                <List
-                    bordered
-                    dataSource={['item1', 'item2', 'item3']}
-                    renderItem={item => (
-                        <List.Item>
-                            {item}
-                        </List.Item>
-                    )}
-
-                />
-            </Card>
-        )
+}
+class PWInputRow extends Component {
+    // render periodic work
+    constructor(props) {
+        super(props)
+        this.state = {
+            dueMonth: 1,
+            dueDay: 1,
+            workType: ['work', 'task', 'life'],
+        }
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
-    plusBtn() {
-        return (
-            <Button icon={<PlusOutlined style={{ margin: 'auto', display: 'block' }} />}></Button>
-        )
+    handleDateChange(date, dateString) {
+        this.setState({ dueMonth: date })
     }
-    rCMission() {
-        return (
-            <div>
-                <Row justify='center'>
-                    <Col className='title'>
-                        Mission
-                    </Col>
-                </Row>
-                <Row justify='center' >
-                    <Col xs={21} lg={18} xxl={17}>
-                        <Row justify='left' gutter={{ xs: 4, sm: 16, md: 16, lg: 3 * remB }} >
-                            <Col >
-                                {this.rInputRow()}
-                            </Col>
-                            <Col style={{ marginBottom: 1.5 * remB }} >
-                                {this.plusBtn()}
-                            </Col>
-
-                            <Col >
-                                {this.rInputRow()}
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-                <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
-                <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
-                    <Col xs={24} sm={12} md={6}>
-                        {this.rScheCard('outdated')}
-                    </Col>
-                    <Col xs={24} sm={12} md={6}>
-                        {this.rScheCard('one week')}
-                    </Col>
-                    <Col xs={24} sm={12} md={6}>
-                        {this.rScheCard('one month')}
-                    </Col>
-                    <Col xs={24} sm={12} md={6}>
-                        {this.rScheCard('6 month')}
-                    </Col>
-                </Row>
-                <Row justify='left' style={{ width: '80%', margin: '0 auto' }}>
-                    <Col>
-                        <CarryOutOutlined className='interactive-icon' />
-                    </Col>
-                    <Col>
-                        <CloseOutlined className='interactive-icon' />
-                    </Col>
-                    <Col><DeleteOutlined className='interactive-icon' /></Col>
-                </Row>
-
-            </div>
-        )
-    }
-    rPWInputRow() {
+    render() {
         return (
             <Row justify='left' gutter={{ xs: 4, sm: 16, md: 16, lg: 3 * remB }}>
                 <Col>
@@ -179,35 +120,93 @@ class Mission extends Component {
                         <Option value="tom">Tom</Option>
                     </Select>
                 </Col>
-
+                <Col style={{ marginBottom: 1.5 * remB }} >
+                    <Button onClick icon={<PlusOutlined style={{ margin: 'auto', display: 'block' }} />}></Button>
+                </Col>
             </Row>
         )
     }
-    rCPWork() {
+}
+function ScheCard(props) {
+    let { titleStr } = props
+    //render schedule card
+    return (
+        <Card title={titleStr} style={{ width: '90%' }}>
+            <List
+                bordered
+                dataSource={['item1', 'item2', 'item3']}
+                renderItem={item => (
+                    <List.Item>
+                        {item}
+                    </List.Item>
+                )}
+
+            />
+        </Card>
+    )
+}
+class CurrentMission extends Component {
+    render() {
         return (
             <div>
                 <Row justify='center'>
                     <Col className='title'>
-                        Periodic work
+                        Mission
                     </Col>
                 </Row>
                 <Row justify='center' >
-                    <Col style={{ alignSelf: 'center', fontSize: '1.5rem', margin: '1rem 1.5rem' }}>
+                    <Col xs={21} lg={18} xxl={17}>
+                        <RInputRow />
+                    </Col>
+                </Row>
+                <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
+                <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
+                    <Col xs={24} sm={12} md={6}>
+                        < ScheCard titleStr='outdated' />
+                    </Col>
+                    <Col xs={24} sm={12} md={6}>
+                        < ScheCard titleStr='one week' />
+                    </Col>
+                    <Col xs={24} sm={12} md={6}>
+                        < ScheCard titleStr='one month' />
+                    </Col>
+                    <Col xs={24} sm={12} md={6}>
+                        < ScheCard titleStr='6 month' />
+                    </Col>
+                </Row>
+                <Row justify='left' style={{ width: '80%', margin: '0 auto' }}>
+                    <Col>
+                        <CarryOutOutlined className='interactive-icon' />
+                    </Col>
+                    <Col>
+                        <CloseOutlined className='interactive-icon' />
+                    </Col>
+                    <Col><DeleteOutlined className='interactive-icon' /></Col>
+                </Row>
+
+            </div>
+        )
+    }
+}
+class PWork extends Component {
+    // render periodic work
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        return (
+            <div>
+                <Row justify='center' align="middle">
+                    <Col className='title'>
+                        Periodic work
+                </Col>
+                </Row>
+                <Row justify='center' align="middle">
+                    <Col style={{ fontSize: '1.5rem', margin: '0rem 1rem' }}>
                         Weekly:
                     </Col>
-                    <Col xs={21} lg={18} xxl={17}>
-                        <Row justify='left' gutter={{ xs: 4, sm: 16, md: 16, lg: 2 * remB }} >
-                            <Col >
-                                {this.rPWInputRow()}
-                            </Col>
-                            <Col style={{ marginBottom: 1.5 * remB }} >
-                                {this.plusBtn()}
-                            </Col>
-
-                            <Col >
-                                {this.rPWInputRow()}
-                            </Col>
-                        </Row>
+                    <Col>
+                        <PWInputRow />
                     </Col>
                 </Row>
                 <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
@@ -246,7 +245,12 @@ class Mission extends Component {
             </div>
         )
     }
-    rCConfig() {
+}
+class MissionConfig extends Component {
+    constructor(props) {
+        super(props)
+    }
+    render() {
         return (
             <div style={{ width: '80%', margin: '0 auto' }}>
                 <Row justify='center'>
@@ -272,27 +276,64 @@ class Mission extends Component {
             </div>
         )
     }
-    renderCarousel() {
-        return (
-            <Carousel interval={null}>
+}
 
-                <Carousel.Item>
-                    {this.rCMission()}
-                    {/* <Carousel.Caption>
+class Mission extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            dueMonth: 1,
+            dueDay: 1,
+            workType: ['work', 'task', 'life'],
+        }
+        
+    }
+    componentDidMount() {
+        Safe_el.check(() => {
+            let currentWindow = rm.getCurrentWindow()
+            currentWindow.setSize(1000, 1000)
+        })
+        let {chngLayoutStyle}=this.props
+        chngLayoutStyle({
+            
+            backgroundImage: `linear-gradient(to bottom, rgba(213, 184, 255, 0.5), rgba(0,0,0,0.5)), url(${Background})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        })
+    }
+    renderCarousel() {
+        let carouselStyle = {
+            background: `${purple[3]}`,
+            overflow: 'hidden',
+            color: 'white',
+            minHeight: '40vh',
+            borderRadius: '1rem', boxShadow:`0 0 1rem ${grey[7]}`
+        }
+        return (
+            <motion.div animate={{ scale: [0.2,1] }} transition={{ duration: 0.2, ease: "easeIn" }}>
+                <Carousel interval={null} style={carouselStyle}>
+
+                    <Carousel.Item>
+                        <CurrentMission />
+                        {/* <Carousel.Caption>
                         <h3>First slide label</h3>
                         <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                     </Carousel.Caption> */}
-                </Carousel.Item>
+                    </Carousel.Item>
 
-                <Carousel.Item>
-                    {this.rCPWork()}
-                </Carousel.Item>
+                    <Carousel.Item>
+                        <PWork />
+                    </Carousel.Item>
 
-                <Carousel.Item>
-                    {this.rCConfig()}
-                </Carousel.Item>
+                    <Carousel.Item>
+                        <MissionConfig />
+                    </Carousel.Item>
 
-            </Carousel>)
+                </Carousel>
+            </motion.div>
+        )
     }
     tabPaneRender(workTypeStr) {
         return (
@@ -311,20 +352,14 @@ class Mission extends Component {
         )
     }
     render() {
-        const props = {
-            dots: true,
-            infinite: true,
-            speed: 500,
-            slidesToShow: 1,
-            slidesToScroll: 1
-        };
         return (
-            <div>
-                <Row justify='center' style={{ margin: '1rem' }}>
-                    <Col span={24} className='title' >
+            <div style={{}}>
+                <Row justify='center' style={{ padding: '3rem 1rem 1rem 1rem' }}>
+                    <Col  className='title' style={{background:purple[3],
+                        color:'white', padding:'1rem', borderRadius:'1rem', boxShadow:`0 0 1rem ${grey[7]}`
+                         }} >
                         Today work
-                    </Col>
-                    <Col span={24}>
+
                         <Tabs defaultActiveKey="work" >
                             {this.state.workType.map((x, idx) => {
                                 return this.tabPaneRender(x)
@@ -332,12 +367,11 @@ class Mission extends Component {
                         </Tabs>
                     </Col>
                 </Row>
-                <Row justify='center' style={{ margin: '0 2rem' }}>
+                <Row justify='center' style={{ margin:'0 2rem' }}>
                     <Col xs={23} lg={21} xl={20} xxl={16}>
                         {this.renderCarousel()}
                     </Col>
                 </Row>
-
                 <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
                     <Col >
                         <Button className='switch-icon-container' >

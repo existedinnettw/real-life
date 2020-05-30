@@ -1,11 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # client
-# dependencies
+## dependencies
 /client/node_modules
 
 ## production
-/client/dist
+/client/build
 
 # server
 /server/node_modules
@@ -16,3 +16,9 @@
 *.env.development.local
 *.env.test.local
 *.env.production.local
+
+# develop only
+/learn.md
+/test-GC_API
+/learn.assets
+/.vscode

@@ -81,7 +81,7 @@ class Analysis extends Component {
     render() {
 
         return (
-            <div style={{ marginTop: '2rem' }}>
+            <div style={{ paddingTop: '2rem', height:'100vh' }}>
                 <div style={{ width: '95%', margin: '0 auto 2rem auto', backgroundColor:'rgb(234, 234, 225)', borderRadius:'.5rem' }}>
                 <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
                     <Row>

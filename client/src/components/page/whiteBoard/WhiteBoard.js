@@ -10,13 +10,8 @@ import Form from 'react-bootstrap/Form'
 import _ from 'lodash'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
+import {Safe_el} from 'util/electronUtil'
 
-//const electron = require('electron') //this will fail
-//const {ipcRender}=electron
-const electron = window.require('electron');
-const fs = electron.remote.require('fs');
-const ipcRenderer = electron.ipcRenderer;
-const currentWindow = electron.remote.getCurrentWindow()
 var remB = 16 //getComputedStyle(document.documentElement).fontSize //this is string
 
 class WhiteBoard extends Component {
@@ -59,8 +54,11 @@ class WhiteBoard extends Component {
         this.getWBConfig()
 
         //read today work data
-        let todayWkDataRd = JSON.parse(fs.readFileSync('./src/page/todayWork.json', 'utf8'));
-        this.setState({ todayWkData: todayWkDataRd })
+        Safe_el.check(()=>{
+            let fs= Safe_el.el.remote.require('fs');
+            let todayWkDataRd = JSON.parse(fs.readFileSync('./src/page/todayWork.json', 'utf8'));
+            this.setState({ todayWkData: todayWkDataRd })
+        })
 
         //window.addEventListener("resize", this.updateDimensions);
         
@@ -202,13 +200,21 @@ class WhiteBoard extends Component {
         )
     }
     rollBackNormalWin(){
-        currentWindow.setAlwaysOnTop(false, 'screen');
-        currentWindow.setSize(800,600)
+        Safe_el.check(()=>{
+            let currentWindow=Safe_el.el.remote.getCurrentWindow()
+            currentWindow.setAlwaysOnTop(false, 'screen');
+            currentWindow.setSize(800,600)
+        })
+        
     }
     render() {
         if(this.state.workState==='WB_start'){
-            currentWindow.setAlwaysOnTop(true, 'screen');
-            currentWindow.setSize(300,150)
+            Safe_el.check(()=>{
+                let currentWindow=Safe_el.el.remote.getCurrentWindow()
+                currentWindow.setAlwaysOnTop(true, 'screen');
+                currentWindow.setSize(300,150)
+            })
+
         }else{
             this.rollBackNormalWin()
         }

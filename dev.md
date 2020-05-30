@@ -16,7 +16,34 @@ MIT。這個軟體主要也算是跟別人交朋友，學會用github? private�
 
 
 
-# 大致外型
+# style
+
+UI加強，我認為講明就是對設計的好看不夠滿意。
+
+我的題目是 real life。我認為真正的世界是什麼樣子，應該是我很重要的設計主題。我覺得真正的世界是邏輯的、單純的、安靜的、暗暗動態的
+
+底調用 紫、白、黑組成。component 是 fade in的，browser 是視窗。partially 的瀏覽這個世界。融貫論的世界可能像球或是蜘蛛網，工作時是在表層經驗世界，越往內是內層球，邏輯上的決定，或是宏觀的經驗統計。
+
+
+
+## animation
+
+[5 Ways to animate a React app.](https://medium.com/@dmitrynozhenko/5-ways-to-animate-a-reactjs-app-in-2019-56eb9af6e3bf)
+
+
+
+* ReactTransitionGroup
+  * 最原生
+* react-animation
+  * 看起來很多種類
+* framer-motion
+  * demo 看起來不錯，api 看起來簡單
+* ant-motion
+  * maybe good with antd
+
+
+
+# 大致component
 
 精準用腦 ch2 白板工作術
 
@@ -202,3 +229,22 @@ gameServer/lib/$R.js 可以看到 `var betInfo = function (id) {...` 它是用 `
 4/13
 
 過去一週非常黑暗，自己都怕
+
+5/29
+
+很久沒弄，新改了client+ server directory
+
+electron 弄成 if 執行
+
+正想從API 下手 (local storage ver)，但是界面很亂
+
+首先應該先refine 界面，有先不必要的，同時design 風格。
+
+接著refactor code ，原本是完全沒有component base
+
+5/30
+
+接下來要考慮一下
+
+
+
