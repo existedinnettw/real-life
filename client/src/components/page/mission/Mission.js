@@ -286,16 +286,16 @@ class Mission extends Component {
             dueDay: 1,
             workType: ['work', 'task', 'life'],
         }
-        
+
     }
     componentDidMount() {
         Safe_el.check(() => {
             let currentWindow = rm.getCurrentWindow()
             currentWindow.setSize(1000, 1000)
         })
-        let {chngLayoutStyle}=this.props
+        let { chngLayoutStyle } = this.props
         chngLayoutStyle({
-            
+
             backgroundImage: `linear-gradient(to bottom, rgba(213, 184, 255, 0.5), rgba(0,0,0,0.5)), url(${Background})`,
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',
@@ -309,10 +309,16 @@ class Mission extends Component {
             overflow: 'hidden',
             color: 'white',
             minHeight: '40vh',
-            borderRadius: '1rem', boxShadow:`0 0 1rem ${grey[7]}`
+            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 '
         }
         return (
-            <motion.div animate={{ scale: [0.2,1] }} transition={{ duration: 0.2, ease: "easeIn" }}>
+            <motion.div initial={{ scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20
+                }}>
                 <Carousel interval={null} style={carouselStyle}>
 
                     <Carousel.Item>
@@ -355,19 +361,30 @@ class Mission extends Component {
         return (
             <div style={{}}>
                 <Row justify='center' style={{ padding: '3rem 1rem 1rem 1rem' }}>
-                    <Col  className='title' style={{background:purple[3],
-                        color:'white', padding:'1rem', borderRadius:'1rem', boxShadow:`0 0 1rem ${grey[7]}`
-                         }} >
-                        Today work
+                    <motion.div initial={{ scale: 0 }}
+                        animate={{ rotate: 0, scale: 1 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 160,
+                            damping: 20
+                        }}>
+                        <Col className='title' style={{
+                            background: purple[3], color: 'white', padding: '1rem',
+                            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98'
+                        }} >
+
+                            Today work
 
                         <Tabs defaultActiveKey="work" >
-                            {this.state.workType.map((x, idx) => {
-                                return this.tabPaneRender(x)
-                            })}
-                        </Tabs>
-                    </Col>
+                                {this.state.workType.map((x, idx) => {
+                                    return this.tabPaneRender(x)
+                                })}
+                            </Tabs>
+
+                        </Col>
+                    </motion.div>
                 </Row>
-                <Row justify='center' style={{ margin:'0 2rem' }}>
+                <Row justify='center' style={{ margin: '0 2rem' }}>
                     <Col xs={23} lg={21} xl={20} xxl={16}>
                         {this.renderCarousel()}
                     </Col>

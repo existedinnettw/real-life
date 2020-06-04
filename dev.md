@@ -24,7 +24,11 @@ UI加強，我認為講明就是對設計的好看不夠滿意。
 
 底調用 紫、白、黑組成。component 是 fade in的，browser 是視窗。partially 的瀏覽這個世界。融貫論的世界可能像球或是蜘蛛網，工作時是在表層經驗世界，越往內是內層球，邏輯上的決定，或是宏觀的經驗統計。
 
+[ 背景圖/免費圖庫大全 – 19個精選免費圖庫網站 ](https://www.proguidescreen.com/?p=8906)
 
+[Purple RGBA Color Model ](http://www.flatuicolorpicker.com/purple-rgba-color-model/)
+
+顏色上要注意我沒有必要非專注在純紫色，偏紅、偏藍都可以，甚至是單純把opacity 降低。
 
 ## animation
 
@@ -38,8 +42,14 @@ UI加強，我認為講明就是對設計的好看不夠滿意。
   * 看起來很多種類
 * framer-motion
   * demo 看起來不錯，api 看起來簡單
+  * 目前使用中
 * ant-motion
   * maybe good with antd
+
+### framer motion
+
+* 有scroll
+* 
 
 
 
@@ -244,7 +254,7 @@ electron 弄成 if 執行
 
 5/30
 
-接下來要考慮一下
+今天大致的弄了mission 的 style, refactor, animate，接下來要考慮一下api, db 和 redux。特別是如果一直困在style，感覺沒完沒了，應該把整個core功能都弄好再說。
 
 
 
