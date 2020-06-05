@@ -9,7 +9,7 @@ const passport = require('passport')
 app = express()
 app.use(cookieSession({
     maxAge: 1000*60*60*24,
-    keys: ['this_is_session_key_eeee']
+    keys: [process.env.sessionKey]
 }))
 
 app.use(passport.initialize())

@@ -9,9 +9,14 @@ passport.use(new GoogleStrategy(
         clientSecret: process.env.googleClientSecret,
         callbackURL: `http://localhost:${port}/auth/google/callback`
     },
-    function (accessToken, refreshToken, profile, done) {
+    function (req, accessToken, refreshToken, profile, done) { //the function is fixed
         //function execute after consent
-        done(null,profile)
+        //console.log(email)
+        // console.log('strategy cb:',req)
+        // console.log('access token:',accessToken) //this is undefine actually
+        // console.log('refresh token:',refreshToken) //this contain scope, id_token
+        // console.log('profile:',profile)
+        done(null,profile) //to serialize user
     }
 ))
 passport.serializeUser((user, done) => {
@@ -19,7 +24,7 @@ passport.serializeUser((user, done) => {
 })
 passport.deserializeUser((user, done) => {
     //decouple session from cookie to get user data, and let it become req
-    console.log('deserialize user:',user.displayName )
+    console.log('deserialize user:',user )
     done(null, user)
 })
 //middleware to check if already authed
@@ -27,12 +32,12 @@ passport.deserializeUser((user, done) => {
 
 let authRouter = express.Router()
 //google
-authRouter.get('/google', passport.authenticate('google', { scope: 'profile' }))
+authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 authRouter.get('/google/callback', passport.authenticate('google'), function (req, res, next) {
     //consolelog login sucess
     res.redirect('/')
 })
-authRouter.get('/logout',isAuthenticated,function(req,res){
+authRouter.get('/logout', isAuthenticated, function(req,res){
     req.logOut()
     console.log('log out')
     res.redirect('/')
