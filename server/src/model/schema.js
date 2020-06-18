@@ -8,7 +8,9 @@ const schemaSql = `
 --- extension for text search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
---- Drop (if table already exist)
+--- Drop (if table already exist), drop should reverse create order
+
+DROP TABLE IF EXISTS today_events;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS cycle_events;
 DROP TABLE IF EXISTS users;
@@ -32,6 +34,7 @@ CREATE TABLE cycle_events(
     init_corn   text NOT NULL,
     due_corn    text NOT NULL,
     target      text,
+    purpose     text,
     expect_time float,
     users_id     INTEGER REFERENCES users(id)
 );
@@ -44,11 +47,19 @@ CREATE TABLE events(
     due_time        bigint NOT NULL,
     done_ts         bigint,
     target          text,
+    purpose         text,
     expect_time     float,
     time_spent      float,
-    users_id         INTEGER REFERENCES users(id),
+    users_id        INTEGER REFERENCES users(id),
     cycle_events_id INTEGER REFERENCES cycle_events(id)
 );
+
+--- Create today_events
+CREATE TABLE today_events(
+    id              SERIAL PRIMARY KEY NOT NULL,
+    users_id        INTEGER REFERENCES users(id),
+    events_id       INTEGER REFERENCES events(id)
+)
 
 `
 const dataSql=`
@@ -62,7 +73,14 @@ VALUES ('brush tooth and bash, eating breakfast', '* 7 * * *', '* 8 * * *', 'don
 
 --- Populate dummy data to events
 INSERT INTO events (summary, init_time, due_time, target, expect_time, users_id)
-VALUES ('write os project', round(extract(epoch from now())), 1593475200, 'full function and done', NULL, 1);
+VALUES ('write os exam', round(extract(epoch from now())), 1592323200, 'full function and done', NULL, 1),
+('write ss project', round(extract(epoch from now())), 1593475200, 'full function and done', NULL, 1),
+('ss project demo', 1593475200, 1593475200, 'audience should have interest', 2, 1);
+
+--- Populate dummy data to today_events
+INSERT INTO today_events (users_id, events_id)
+VALUES (1, 1),
+(1, 3);
 `
 
 db.none(schemaSql).then(()=>{

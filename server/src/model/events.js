@@ -10,7 +10,7 @@ function list(serchText='', usersID){
     if(serchText){
         where.push(`text ILIKE '%$1:value%'`)
     }
-    where.push('id = $2')
+    where.push('users_id = $2')
     const sql=`
     SELECT * FROM events
     WHERE ${where.join(' AND ')}
@@ -19,13 +19,17 @@ function list(serchText='', usersID){
     return db.any(sql, [serchText,usersID])
 }
 
-function create(summary, init_time, due_time, target, expect_time, users_id){
+function create(summary, init_time, due_time, target, purpose, expect_time, users_id){
     const sql=`
     INSERT INTO events ($<this:name>)
-    VALUES ($<summary>, $<init_time>, $<due_time>, $<target>, $<expect_time>, $<users_id>)
+    VALUES ($<summary>, $<init_time>, $<due_time>, $<target>, $<purpose>, $<expect_time>, $<users_id>)
     RETURNING *
     `
-    return db.one(sql, {summary, init_time, due_time, target, expect_time, users_id} )
+    return db.one(sql, {summary, init_time, due_time, target, purpose, expect_time, users_id} )
+}
+function delet(id){
+    const sql=``
+    return db.none()
 }
 
 module.exports={

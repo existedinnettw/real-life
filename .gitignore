@@ -9,6 +9,7 @@
 
 # server
 /server/node_modules
+/server/build
 
 
 # misc

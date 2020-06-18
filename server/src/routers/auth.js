@@ -24,7 +24,7 @@ passport.serializeUser((user, done) => {
 })
 passport.deserializeUser((user, done) => {
     //decouple session from cookie to get user data, and let it become req
-    console.log('deserialize user:',user )
+    //console.log('deserialize user:',user )
     done(null, user)
 })
 //middleware to check if already authed

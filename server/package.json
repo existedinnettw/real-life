@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "watch":        "env-cmd -f .env nodemon node src/server.js",
-    "test":         "echo \"Error: no test specified\" && exit 1",
+    "watch": "env-cmd -f .env nodemon --delay 1 node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "schema:local": "env-cmd -f .env node src/model/schema.js"
   },
   "author": "morgana",
@@ -21,6 +21,13 @@
     "passport-google-oauth20": "^2.0.0",
     "pg-promise": "^10.5.6",
     "save-dev": "0.0.1-security",
+    "ws": "^7.3.0",
     "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-env": "^0.4.0",
+    "gulp-nodemon": "^2.5.0"
   }
 }

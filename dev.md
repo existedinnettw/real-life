@@ -183,7 +183,7 @@ data 肯定會有不夠好的地方，自己處理。e.g. 花費時間=0
 
 ### definition of events
 
-想像是cpu，一件事會有initTime, dueTime, target
+想像是cpu，一件事會有initTime, dueTime, target。如果更廣義一點，再加上purpose，使得event 的目的性確保。
 
 e.g. 要考多益。多益考試event 是那短短的3hr，initTime: 9AM, dueTime: 12PM, target: 考完+考>760?。但是還有一個event是準備多益，initTime: 從決定考試的當下，dueTime:開始考多益，target: 模擬題寫得完+9成對。
 
@@ -215,14 +215,16 @@ all the time in unix timestamp
    3. else --> time stamp
 6. **target**
    1. string
-7. **expect_time**
+7. **purpose**
+8. **expect_time**
    1. in hr(float point) ( 15min/time block )
-8. time_spent
+9. time_spent
    1. in hr(float point)
-9. cycle_events_id
+10. cycle_events_id
    1. forien key, use this property if event is generate by cycleEvents, can be null
-10. **users_id**
+11. **users_id**
     1. forien key, not null
+    2. assign by server during create api, rather than form
 
 ### cycle_events
 
@@ -237,7 +239,8 @@ template of events
 4. **summary**
 5. **target**
 6. **expect_time**
-7. **users_id**
+7. purpose
+8. **users_id**
    1. forien key
 
 cycleEvents產生event的方法是，當有event 的doneTS 被update，如果event 是有cycleID 的，表示是 cycleEvents 所產生的，所以就用cycleID找到該 template，自動新產生一個job （自動補滿最近的7個 job）。
@@ -250,9 +253,17 @@ cycleEvents產生event的方法是，當有event 的doneTS 被update，如果eve
 2. email
    1. 事實上我是把email當成唯一的id 
 
+應該可以存其它user 設定 e.g. 語言、睡眠時間
 
+接下來的問題是today_events，到底放那裡？我直覺是在user 的column額外多一欄放array of  event id，因為也多少。但後來想到，這和user friend 一樣，都是一對多。user friend 是額外拆一個表，所以這裡也拆一個
 
+### today_events
 
+1. id
+2. users_id
+   1. forien_key
+3. events_id
+   1. forien_key
 
 ## reference
 
@@ -277,7 +288,37 @@ cycleEvents產生event的方法是，當有event 的doneTS 被update，如果eve
 
 
 
+# UI
 
+## 元件操作控制
+
+考慮的點
+
+UI 要能夠在 pc browser, mobile browser 上通用，或是只需要最少的修改
+
+最基本就是按鈕式，所有的東西event 都靠一個圖標，onclick來完成
+
+* implement 簡單
+* 通用，任何的event 基本上都可以用
+* 操作動作簡單
+* 有時候不知道click的event 到底做了什麼
+* click到底有沒有做，需要額外display元件來check
+* 可能repeat fire
+* 對於重覆的資料，每個資料的button 也要重複
+
+拖曳式 drag and drop
+
+* 操作直覺，user 
+* 比較適用subset 類的event。不適合執行類的event
+* ... 特性基本上和按鈕式相反
+* drag 到drop 的距離需要在整個螢幕內。如果在螢幕外，就算有自動滑動螢幕得以完成操作，也會變的很不直覺
+  * 這放大螢幕差距，大螢幕可以塞進所有data會比button 好操作，小螢幕可能塞不進所有data 結果還不如button。
+  * 透過有時候會顯示的fixed property object 做為dop zone 來讓drag and drop 的操作在螢幕內，等效就是把data塞進螢幕裡。
+  * 或許螢幕外的操作可以用暫存區之類的補強
+
+## display
+
+open 箱子 pop up 式
 
 
 
@@ -372,3 +413,74 @@ electron 弄成 if 執行
 6/5
 
 弄好db了，接下來弄API
+
+6/6
+
+今天發現image 一直有error，原來是因為用了react-router
+
+[Serving Apps with Client-Side Routing](https://create-react-app.dev/docs/deployment/#serving-apps-with-client-side-routing)
+
+6/7
+
+一個大麻煩，Oauth 不能cros。所以我要改完之後立刻build，然後馬上copy到server/build。我用react-rewire 把dev server 的設定改成writeToDisk，這讓npm start 就像 npm build watch mode。然後在webpack 的設定使用fileManagerPlugin 去copy build 裡的data 到server/build。
+
+另一個方法是不copy，express 的use static 直接指定client 資料夾，然後nodemon watch client/build。但是這超出server folder所以不推。
+
+[How to create multiple output paths in Webpack config](https://stackoverflow.com/questions/35903246/how-to-create-multiple-output-paths-in-webpack-config/59019896#59019896)
+
+unuseful
+
+* [react-app-rewire-build-dev](https://github.com/raodurgesh/react-app-rewire-build-dev#readme)
+  * 沒更新，但有提供最新解
+* [cra-build-watch](https://github.com/Nargonath/cra-build-watch#readme)
+  * 一直顯示error resource lock
+
+再來是我希望browser 也能auto refresh
+
+要能 livereload refresh，必須用livereload cli 開server，然後browser有對應。但是我已經開express server 好像沒有proxy 的option?
+
+另一個是直接在express 裡插入middleware (prefer)，我是用[easy-livereload](https://www.npmjs.com/package/easy-livereload)，但是一直顯示websocket 連不上
+
+ERR_CONNECTION_REFUSED
+
+目前放棄 livereload
+
+改用gulp + browser sync 後 ~~還是有error~~ ，
+
+> in chrome
+>
+> webpackHotDevClient.js:60 WebSocket connection to 'ws://localhost:8080/sockjs-node' failed: Connection closed before receiving a handshake response
+>
+> 事後證明，這是因為我的 build watch mode 是用webpack devser 假裝的，build的內容可能留下一些給devServer 用的東西。
+
+但是已經會自動reload，不過reload 之後是跳回root page。花了一天，結果差不多... 不過，gulp 真的值得學一下。
+
+---
+
+好像事實上是可以直用proxy 開dev server的？？ 結果確實是可以開proxy，但是redirect 就會從port3000(client) 轉到port 4000 (server)，而且proxy 好像不能直接setcookie? [webpack-dev-server set cookie via proxy](https://stackoverflow.com/questions/56377371/webpack-dev-server-set-cookie-via-proxy) 。轉到port 4000 後也就不會auto reload了
+
+---
+
+結論，目前的 watch mode build還有瑕疵。gulp auto reload 雖然無法直接是default page但也很近了。
+
+是否用cra+rewire 值得考慮，或許直接download default webpack config 是更好的選擇。
+
+其實我最後有點上頭了，直接用f5 refresh 就好，偏偏要auto refresh。
+
+6/8
+
+補充如何知道到底有沒有login，因為oauth 的cookie setting 是完全不經過browser的js 的
+
+[How to check if user is logged in or not with “Google Sign In” (OAuth 2.0)](https://stackoverflow.com/questions/38083568/how-to-check-if-user-is-logged-in-or-not-with-google-sign-in-oauth-2-0)
+
+簡單來說就是用custom 的cookie去記錄。更好的方法是用 `isSignedIn.get()` 直接問。透過這個加上redux就能確定是否要顯示login or logout button
+
+6/9
+
+今天完成最基本的dispatch action--> calling api--> store at in store --> component connect to state --> use state to render。所以目前整個project 所需要的基本技術已經齊全。接下來是補全所有功能，這實際上還是遇到很多修正，特別是我的UI事實上還不足實際使用。接下來的流程是，**確立UI，同步完成核心功能**（create, delet 工作, create, delet today work）。
+
+接下來一週是期末考，所以我必須暫停，事實證明，我一週半是做不完這個project的，而且離完成還很多。之後的shedule要把這些也考慮進去。
+
+6/17
+
+重新開始

@@ -10,7 +10,7 @@ function list(serchText='', usersID){
     if(serchText){
         where.push(`text ILIKE '%$1:value%'`)
     }
-    where.push('id = $2')
+    where.push('users_id = $2')
     const sql=`
     SELECT * FROM events
     WHERE ${where.join(' AND ')}
