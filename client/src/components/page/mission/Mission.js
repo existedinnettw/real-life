@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Row, Col, Divider } from 'antd';
-import { Tabs, Input, DatePicker, Select, Button, Card, List, Typography, InputNumber } from 'antd';
+import { Tabs, Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber } from 'antd';
 import Carousel from 'react-bootstrap/Carousel'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'antd/dist/antd.css'
@@ -13,11 +13,13 @@ import { remB } from 'util/constant'
 import { motion } from "framer-motion"
 import Background from './background.jpg';
 import { connect } from 'react-redux';
-import eventSlice, { fetchEvent, addEvent } from 'state/eventSlice'
+import eventSlice, { fetchEvent, addEvent, rmvEvent } from 'state/eventSlice'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import { DndProvider } from "react-dnd";
-import HTML5backend from "react-dnd-html5-backend";
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { ItemTypes } from 'util/constant'
+import { useDrag, useDrop } from "react-dnd";
 
 
 const { Option } = Select
@@ -28,7 +30,7 @@ class RInputRow extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            summary: '',
+            summary: '', //or null, db col should be non null
             target: '',
             purpose: '',
             initTime: moment(), //moment object, when transfer use moment.unix()
@@ -95,6 +97,7 @@ class RInputRow extends Component {
 RInputRow = connect(state => ({
     ...state.event
 }))(RInputRow)
+
 class PWInputRow extends Component {
     // render periodic work
     constructor(props) {
@@ -149,31 +152,78 @@ class PWInputRow extends Component {
         )
     }
 }
+
+function DraggableCard(props) {
+    const [{ isDragging }, dragRef] = useDrag({
+        item: { type: ItemTypes.CARD, ...props },
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging() //return true or false
+        })
+    });
+    return (
+        <div ref={dragRef} //
+            className={`card`}
+            style={{
+                opacity: isDragging ? 0.5 : 1,
+                cursor: 'move',
+            }}
+        >
+            {props.event.summary}
+        </div>
+    );
+};
+
 function ScheCard(props) {
     let { titleStr, dataArr } = props
     //render schedule card
+    const columns = dataArr.map((event, columnIndex) => {
+        const propsToColumn = { event };
+        return (<DraggableCard key={`column ${columnIndex}`} {...propsToColumn} />)
+    });
     return (
-        <Card title={titleStr} style={{ width: '90%' }}>
-            {/* <List
-                bordered
-                dataSource={dataArr}
-                renderItem={item => (
-                    <List.Item>
-                        {item.summary}
-                    </List.Item>
-                )}
-
-            /> */}
-
+        <Card title={titleStr} style={{ opacity: 1, padding: '0.5rem' }} bodyStyle={{ backgroundColor: 'rgb(220,220,220)' }}>
+            {columns}
         </Card>
+    )
+}
+
+function DropIcon({ tooltipStr, onDrop, children }) {
+    const [bottom, setBottom] = useState(0);
+    const [{ isOver, canDrop }, drop] = useDrop({
+        accept: ItemTypes.CARD, //this value will pass to item
+        drop: (item, mon) => {
+            //item is what the draggle item is, its property depend on its item object
+            //console.log('some dropped',item.event) //dispatch(rmvEvent()),
+            onDrop(item.event.id)
+        },
+        collect: (mon) => ({
+            isOver: !!mon.isOver(),
+            canDrop: !!mon.canDrop()
+        })
+    })
+    let className = 'interactive-icon-container' //default
+    if (!isOver && canDrop) {
+        //className='interactive-icon-container'
+    } else if (isOver && canDrop) {
+        className += ' interactive-icon-container-hover'
+    }
+    return (
+        <Affix offsetBottom={bottom}>
+            <Tooltip title={tooltipStr}>
+                <Button ref={drop}
+                    className={className}
+                >
+                    {children}
+                </Button>
+            </Tooltip>
+        </Affix>
     )
 }
 
 
 class CurrentMission extends Component {
     eventsFilter(period) {
-        const { eventLoading, events } = this.props
-        let now = moment()
+        const { events } = this.props
         let lowerBound
         let upperBound
         switch (period) {
@@ -182,11 +232,12 @@ class CurrentMission extends Component {
                 upperBound = moment()
                 break
             case 'today':
+                //not use currently
                 lowerBound = moment()
                 upperBound = moment().add(1, 'days')
                 break
             case 'oneWeek':
-                lowerBound = moment().add(1, 'days')
+                lowerBound = moment()
                 upperBound = moment().add(7, 'days')
                 break
             case 'oneMonth':
@@ -213,9 +264,7 @@ class CurrentMission extends Component {
         return (
             <div>
                 <Row justify='center'>
-                    <Col className='title'>
-                        Mission
-                    </Col>
+                    <Col className='title'>Mission</Col>
                 </Row>
                 <Row justify='center' >
                     <Col xs={21} lg={18} xxl={17}>
@@ -224,27 +273,36 @@ class CurrentMission extends Component {
                 </Row>
                 <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
-                    <Col xs={24} sm={12} md={6}>
+                    <Col xs={24} sm={12} lg={6}>
                         < ScheCard titleStr='outdated' dataArr={this.eventsFilter('outdated')} />
                     </Col>
-                    <Col xs={24} sm={12} md={6}>
+                    <Col xs={24} sm={12} lg={6}>
                         < ScheCard titleStr='one week' dataArr={this.eventsFilter('oneWeek')} />
                     </Col>
-                    <Col xs={24} sm={12} md={6}>
+                    <Col xs={24} sm={12} lg={6}>
                         < ScheCard titleStr='one month' dataArr={this.eventsFilter('oneMonth')} />
                     </Col>
-                    <Col xs={24} sm={12} md={6}>
+                    <Col xs={24} sm={12} lg={6}>
                         < ScheCard titleStr='6 month' dataArr={this.eventsFilter('6Month')} />
                     </Col>
                 </Row>
                 <Row justify='left' style={{ width: '80%', margin: '0 auto' }}>
                     <Col>
-                        <CarryOutOutlined className='interactive-icon' />
+                        <DropIcon onDrop={(eID) => { }}>
+                            <CarryOutOutlined className='interactive-icon' />
+                        </DropIcon>
                     </Col>
                     <Col>
-                        <CloseOutlined className='interactive-icon' />
+                        <DropIcon onDrop={(eID) => { }}>
+                            <CloseOutlined className='interactive-icon' />
+                        </DropIcon>
                     </Col>
-                    <Col><DeleteOutlined className='interactive-icon' /></Col>
+                    <Col>
+                        <DropIcon tooltipStr={'drag event over to delete it'}
+                            onDrop={(eID) => { this.props.dispatch(rmvEvent(eID)) }}>
+                            <DeleteOutlined className='interactive-icon' />
+                        </DropIcon>
+                    </Col>
                 </Row>
 
             </div>
@@ -345,6 +403,74 @@ class MissionConfig extends Component {
     }
 }
 
+function TodayWorkDisp(props) {
+    return (
+        <motion.div
+            initial={{ scale: 0 }}
+            animate={{ rotate: 0, scale: 1 }}
+            transition={{
+                type: "spring",
+                stiffness: 160,
+                damping: 20
+            }}>
+            <Row justify='center' >
+                <Col xs={24} className='title'>
+                    Today work
+            </Col>
+                <Col xs={24} style={{ padding: '0 1.5rem' }}>
+                    <List
+                        split={false}
+                        dataSource={props.events}
+
+                        header={
+                            <Row
+                                style={{
+                                    fontWeight: 600
+                                }}>
+                                <Col xs={6}>
+                                    <Typography.Text keyboard="true" >[Summary]</Typography.Text>
+                                </Col>
+                                <Col xs={6}>
+                                    <Typography.Text keyboard="true" >[Target]</Typography.Text>
+                                </Col>
+                                <Col xs={6}>
+                                    <Typography.Text keyboard="true" >[Purpose]</Typography.Text>
+                                </Col>
+                                <Col xs={6}>
+                                    <Typography.Text keyboard="true" >[DueTime]</Typography.Text>
+                                </Col>
+                            </Row>
+                        }
+                        renderItem={item => (
+                            <List.Item >
+                                <Row
+                                    style={{
+                                        width: '100%'
+                                    }}>
+                                    <Col xs={6}>
+                                        {item.summary}
+                                    </Col>
+                                    <Col xs={6}>
+                                        {item.target}
+                                    </Col>
+                                    <Col xs={6}>
+                                        {item.purpose}
+                                    </Col>
+                                    <Col xs={6}>
+                                        {item.due_time}
+                                    </Col>
+                                </Row>
+                            </List.Item>
+                        )} />
+                </Col>
+            </Row>
+        </motion.div>
+    )
+}
+TodayWorkDisp= connect(state => ({
+    ...state.event
+}))(TodayWorkDisp)
+
 class Mission extends Component {
     constructor(props) {
         super(props)
@@ -379,7 +505,7 @@ class Mission extends Component {
             overflow: 'hidden',
             color: 'white',
             minHeight: '40vh',
-            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 '
+            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 ',
         }
         return (
             <motion.div initial={{ scale: 0 }}
@@ -392,11 +518,13 @@ class Mission extends Component {
                 <Carousel interval={null} style={carouselStyle}>
 
                     <Carousel.Item>
-                        <CurrentMission />
-                        {/* <Carousel.Caption>
+                        <DndProvider backend={HTML5Backend}>
+                            <CurrentMission />
+                            {/* <Carousel.Caption>
                         <h3>First slide label</h3>
                         <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                     </Carousel.Caption> */}
+                        </DndProvider>
                     </Carousel.Item>
 
                     <Carousel.Item>
@@ -411,86 +539,58 @@ class Mission extends Component {
             </motion.div>
         )
     }
-    tabPaneRender(workTypeStr) {
-        return (
-            <TabPane tab={workTypeStr} key={workTypeStr} >
-                <List
-                    bordered
-                    dataSource={['item1', 'item2', 'item3']}
-                    renderItem={item => (
-                        <List.Item>
-                            {item}
-                        </List.Item>
-                    )}
-                    style={{ margin: '0 auto', minWidth: '400px', width: '50vw' }}
-                />
-            </TabPane>
-        )
-    }
     render() {
+        const rwdColBP = { xs: 23, lg: 21, xl: 20, xxl: 16 }
         return (
-            <div style={{}}>
-                <DndProvider backend={HTML5backend}>
-                    <Row justify='center' style={{ padding: '3rem 1rem 1rem 1rem' }}>
-                        <motion.div initial={{ scale: 0 }}
-                            animate={{ rotate: 0, scale: 1 }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 160,
-                                damping: 20
-                            }}>
-                            <Col className='title' style={{
-                                background: purple[3], color: 'white', padding: '1rem',
-                                borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98'
-                            }} >
-
-                                Today work
-
-                        <Tabs defaultActiveKey="work" >
-                                    {this.state.workType.map((x, idx) => {
-                                        return this.tabPaneRender(x)
-                                    })}
-                                </Tabs>
-
-                            </Col>
-                        </motion.div>
-                    </Row>
-                    <Row justify='center' style={{ margin: '0 2rem' }}>
-                        <Col xs={23} lg={21} xl={20} xxl={16}>
-                            {this.renderCarousel()}
-                        </Col>
-                    </Row>
-                    <Button>
-                        {/* these place have to remove later */}
-                        <a href={`${process.env.BASE_URL}/auth/google`}>
-                            Click here to login
+            <div style={{
+                padding: '2rem 1rem'
+            }}>
+                <Row justify='center'>
+                    <Col {...rwdColBP}
+                        style={{
+                            background: purple[3], color: 'white',
+                            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98',
+                            margin: '1.5rem 1rem 2rem 1rem',
+                            padding: '0 0 1rem 0'
+                        }}
+                    >
+                        <TodayWorkDisp/>
+                    </Col>
+                </Row>
+                <Row justify='center' style={{ margin: '0 0' }}>
+                    <Col {...rwdColBP} >
+                        {this.renderCarousel()}
+                    </Col>
+                </Row>
+                <Button>
+                    {/* these place have to remove later */}
+                    <a href={`${process.env.BASE_URL}/auth/google`}>
+                        Click here to login
                     </a>
-                    </Button>
-                    <Button onClick={() => {
-                        this.props.dispatch(fetchEvent(''))
+                </Button>
+                <Button onClick={() => {
+                    this.props.dispatch(fetchEvent())
+                }}>
+                    load data
+                </Button>
 
-                    }}>
-                        load data
-                    </Button>
-
-                    <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
-                        <Col >
-                            <Button className='switch-icon-container' >
-                                <CalendarOutlined className='switch-icon' />
-                            </Button>
-                        </Col>
-                        <Col >
-                            <Button className='switch-icon-container'>
-                                <RedoOutlined className='switch-icon' />
-                            </Button>
-                        </Col>
-                        <Col >
-                            <Button className='switch-icon-container'>
-                                <ToolOutlined className='switch-icon' />
-                            </Button>
-                        </Col>
-                    </Row>
-                </DndProvider>
+                <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
+                    {/* <Col >
+                        <Button className='switch-icon-container' >
+                            <CalendarOutlined className='switch-icon' />
+                        </Button>
+                    </Col>
+                    <Col >
+                        <Button className='switch-icon-container'>
+                            <RedoOutlined className='switch-icon' />
+                        </Button>
+                    </Col>
+                    <Col >
+                        <Button className='switch-icon-container'>
+                            <ToolOutlined className='switch-icon' />
+                        </Button>
+                    </Col> */}
+                </Row>
             </div >
         )
     }

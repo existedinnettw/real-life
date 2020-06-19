@@ -6,12 +6,12 @@ if(!global.db){
 
 // this only tranfer sql to same js action
 function list(serchText='', usersID){
-    const where=[]
+    let where=[]
     if(serchText){
         where.push(`text ILIKE '%$1:value%'`)
     }
     where.push('users_id = $2')
-    const sql=`
+    let sql=`
     SELECT * FROM events
     WHERE ${where.join(' AND ')}
     ORDER BY id DESC
@@ -27,13 +27,18 @@ function create(summary, init_time, due_time, target, purpose, expect_time, user
     `
     return db.one(sql, {summary, init_time, due_time, target, purpose, expect_time, users_id} )
 }
-function delet(id){
-    const sql=``
-    return db.none()
+function deleteSQL(id, users_id){
+    let conditions=[`id = $<id>`, `users_id = $<users_id>`]
+    const sql=`
+    DELETE FROM events
+    WHERE ${conditions.join(' AND ')}
+    RETURNING *
+    `
+    return db.many(sql, {id,users_id})
 }
 
 module.exports={
-    list, create
+    list, create, deleteSQL
 }
 
 

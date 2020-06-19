@@ -220,11 +220,23 @@ all the time in unix timestamp
    1. in hr(float point) ( 15min/time block )
 9. time_spent
    1. in hr(float point)
-10. cycle_events_id
-   1. forien key, use this property if event is generate by cycleEvents, can be null
-11. **users_id**
+10. is_today_event
+    1. boolean true or false(default)
+11. cycle_events_id
+       1. forien key, use this property if event is generate by cycleEvents, can be null
+12. **users_id**
     1. forien key, not null
     2. assign by server during create api, rather than form
+
+#### hierarchy
+
+我們可以把一個很大的events e.g. 唸一本書，分拆成多個小的events e.g. 唸一個章節。是否要有這個特性？
+
+這其實牽涉到比如UI，如果有hierarchy，是不是就要把sub event 自動的排在parent event 底下？
+
+結論是預先保留，因為確實是event 的天生結構特性之一。但是現在要implement 相關的code 太難，要大改UI
+
+1. p_event_id
 
 ### cycle_events
 
@@ -258,6 +270,10 @@ cycleEvents產生event的方法是，當有event 的doneTS 被update，如果eve
 接下來的問題是today_events，到底放那裡？我直覺是在user 的column額外多一欄放array of  event id，因為也多少。但後來想到，這和user friend 一樣，都是一對多。user friend 是額外拆一個表，所以這裡也拆一個
 
 ### today_events
+
+這個項目到底應不應該和events 合併，只是多一個boolean column。
+
+根據**entity classes**  的原則，確實應該要合併
 
 1. id
 2. users_id
@@ -484,3 +500,11 @@ ERR_CONNECTION_REFUSED
 6/17
 
 重新開始
+
+6/19
+
+today event, local process
+
+
+
+`git restore --source=HEAD --staged --worktree -- ./server`

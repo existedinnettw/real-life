@@ -58,6 +58,7 @@
     "build:local": "react-app-rewired build",
     "build:aws": "react-app-rewired build",
     "dist": "wsl cp -avr ./build ../server",
+    "sync": "wsl lsyncd -log all -nodaemon -rsync ./build ../server/build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },

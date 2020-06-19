@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form'
 import _ from 'lodash'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
-import {Safe_el} from 'util/electronUtil'
+import { Safe_el } from 'util/electronUtil'
 
 var remB = 16 //getComputedStyle(document.documentElement).fontSize //this is string
 
@@ -54,14 +54,14 @@ class WhiteBoard extends Component {
         this.getWBConfig()
 
         //read today work data
-        Safe_el.check(()=>{
-            let fs= Safe_el.el.remote.require('fs');
+        Safe_el.check(() => {
+            let fs = Safe_el.el.remote.require('fs');
             let todayWkDataRd = JSON.parse(fs.readFileSync('./src/page/todayWork.json', 'utf8'));
             this.setState({ todayWkData: todayWkDataRd })
         })
 
         //window.addEventListener("resize", this.updateDimensions);
-        
+
     }
     componentWillUnmount() {
         clearInterval(this.state.tickIntervalId);
@@ -133,7 +133,7 @@ class WhiteBoard extends Component {
         this.setState({ workState: 'WB_start' })
         this.setState({ timNow: new Date() })
         this.startClockTime = new Date()
-        
+
     }
     render_choice() {
         let timeArr = _.range(5, 95, 5);
@@ -190,7 +190,7 @@ class WhiteBoard extends Component {
         let timeStr = `${this.state.choosedTime - leftTime} min left`
         return (
             <div>
-                <Container className='compContainer' style={{minWidth:50,minHeight:50}}>
+                <Container className='compContainer' style={{ minWidth: 50, minHeight: 50 }}>
                     <Row className="h-100 align-items-center">
                         <Col xs={12} className='mission-str'>{missionStr}</Col>
                         <Col xs={12} className='count-time-str'>{timeStr}</Col>
@@ -199,36 +199,32 @@ class WhiteBoard extends Component {
             </div>
         )
     }
-    rollBackNormalWin(){
-        Safe_el.check(()=>{
-            let currentWindow=Safe_el.el.remote.getCurrentWindow()
+    rollBackNormalWin() {
+        Safe_el.check(() => {
+            let currentWindow = Safe_el.el.remote.getCurrentWindow()
             currentWindow.setAlwaysOnTop(false, 'screen');
-            currentWindow.setSize(800,600)
+            currentWindow.setSize(800, 600)
         })
-        
+
     }
     render() {
-        if(this.state.workState==='WB_start'){
-            Safe_el.check(()=>{
-                let currentWindow=Safe_el.el.remote.getCurrentWindow()
+        if (this.state.workState === 'WB_start') {
+            Safe_el.check(() => {
+                let currentWindow = Safe_el.el.remote.getCurrentWindow()
                 currentWindow.setAlwaysOnTop(true, 'screen');
-                currentWindow.setSize(300,150)
+                currentWindow.setSize(300, 150)
             })
 
-        }else{
+        } else {
             this.rollBackNormalWin()
         }
-
-        if (this.state.workState === 'WB') {
-            return this.render_wb()
-        } else if (this.state.workState === 'WB_choice') {
-            return this.render_choice()
-        } else if (this.state.workState === 'WB_start') {
-            return this.render_start()
-        } else {
-            //browser router?
-            return 404
-        }
+        return (
+            <div className='whiteboard' >
+                {this.state.workState === 'WB' && this.render_wb()}
+                {this.state.workState === 'WB_choice' && this.render_choice()}
+                {this.state.workState === 'WB_start' && this.render_start()}
+            </div>
+        )
     }
 }
 

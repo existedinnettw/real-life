@@ -87,7 +87,7 @@ export function delEvent(eventID){
     }).then(function(res) {
         if (res.status !== 200)
             throw new Error(`Unexpected response code: ${res.status}`);
-
-        return //res.data;
+        //console.log(res)
+        return res.data;
     });
 }

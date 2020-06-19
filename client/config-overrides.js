@@ -38,16 +38,16 @@ module.exports = {
       'process.env.BASE_URL': JSON.stringify(url),
       'process.env.VERSION': JSON.stringify(require('./package.json').version)
     })
-    config.plugins.push(
-      new FileManagerPlugin({
-        onEnd: {
-          copy: [{
-            source: outputPath,
-            destination: '../server/build/',
-          }],
-        },
-      })
-    )
+    // config.plugins.push(
+    //   new FileManagerPlugin({
+    //     onEnd: {
+    //       copy: [{ //copy all project is actually slow
+    //         source: outputPath,
+    //         destination: '../server/build/',
+    //       }],
+    //     },
+    //   })
+    // )
 
     //watch mode build
     const appDirectory = fs.realpathSync(process.cwd());

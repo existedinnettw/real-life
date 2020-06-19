@@ -4,8 +4,6 @@ const {isAuthenticated} = require('./auth')
 const usersModel = require('../model/users')
 const eventsModel = require('../model/events')
 const cycleEventsModel= require('../model/cycleEvents')
-const todayEventsModel= require('../model/todayEvents')
-
 
 let eventRouter= express.Router()
 
@@ -42,10 +40,11 @@ eventRouter.post('/events', function(req,res,next){
     }).catch(next) //to error handle
 })
 eventRouter.delete('/events/:id', function(req,res,next){
+    const email=req.user.emails[0].value
     usersModel.list(email).then(rst=>{
         const userID= rst.id
         const {id} = req.params;
-        eventsModel.create(summary, initTime, dueTime, target, purpose, expectTime, userID ).then(events=>{
+        eventsModel.deleteSQL(id, userID ).then(events=>{
             res.json(events) //return events
         })
         
@@ -62,19 +61,6 @@ eventRouter.get('/cycleEvents' ,function(req, res, next){
             res.json(events)
         })
     }).catch(next) //to error handle
-})
-
-/*************************************todayEvents**********************************/
-eventRouter.get('/todayEvents' ,function(req, res, next){
-    const email=req.user.emails[0].value 
-    usersModel.list(email).then(rst=>{
-        const userID= rst.id
-        todayEventsModel.list(userID).then( todayEvents=>{
-            //search all the events by the getted event ids
-            //eventsModel.list()
-            res.json(todayEvents) 
-        })
-    }).catch(next)
 })
 
 
