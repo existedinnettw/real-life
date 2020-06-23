@@ -31,7 +31,7 @@ function WBGreet(props) {
             }
         }, []
     )
-    let timPst = now
+    let timPst = moment()
     timPst.hour(6)
     let timeHr = now.hour() - timPst.hour()
     if (timeHr < 0) {
@@ -144,6 +144,7 @@ class WBStart extends Component {
         clearInterval(this.intervalId)
         const interval=this.interval
         // console.log('wb_start unmount', interval.as('seconds'), interval.as('minutes'), interval.as('hours'))
+        //this place is why I use class component
         this.props.unMountCB(this.props.workingEvent, interval.as('hours'))
     }
 

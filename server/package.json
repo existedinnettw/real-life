@@ -4,9 +4,13 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
+    "start:local": "env-cmd -f .env cross-env NODE_ENV=development node src/server.js",
+    "start:localDocker":  "env-cmd -f .env cross-env NODE_ENV=development PG_HOSTNAME=host.docker.internal node src/server.js",
+    "start:aws": "env-cmd -f .env cross-env NODE_ENV=production node src/server.js",
     "watch": "env-cmd -f .env nodemon --delay 0.1 node src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "schema:local": "env-cmd -f .env node src/model/schema.js"
+    "schema:local": "env-cmd -f .env cross-env NODE_ENV=development node src/model/schema.js",
+    "schema:aws":   "env-cmd -f .env cross-env NODE_ENV=production node src/model/schema.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "morgana",
   "license": "ISC",
