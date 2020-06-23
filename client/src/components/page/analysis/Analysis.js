@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
-import { Row, Col, Divider } from 'antd';
-import { Tabs, Input, DatePicker, Select, Button, Card, List, Typography, InputNumber } from 'antd';
-import './analysis.css'
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer,
+import {
+    Row, Col, Divider, Card,
+    //Tabs, Input, DatePicker, Select, Button,  List, Typography, InputNumber
+} from 'antd';
+import 'antd/dist/antd.css'
+
+import {
+    PieChart, Pie, Cell,
+    //Sector,  ResponsiveContainer,
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine,
 } from 'recharts';
+import './analysis.css'
 
 //import rd3 from 'react-d3-library'
 //const RD3Component = rd3.Component;
@@ -81,9 +87,9 @@ class Analysis extends Component {
     render() {
 
         return (
-            <div style={{ paddingTop: '2rem', height:'100vh' }}>
-                <div style={{ width: '95%', margin: '0 auto 2rem auto', backgroundColor:'rgb(234, 234, 225)', borderRadius:'.5rem' }}>
-                <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
+            <div style={{ paddingTop: '2rem', height: '100vh' }}>
+                <div style={{ width: '95%', margin: '0 auto 2rem auto', backgroundColor: 'rgb(234, 234, 225)', borderRadius: '.5rem' }}>
+                    <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
                     <Row>
                         <Col xs={24} md={12}>
                             <Card title='一週時間比例'>
@@ -114,8 +120,8 @@ class Analysis extends Component {
                     </Row>
                     <Row justify='center'>
                         <Col className='sum-col'>
-                        <h2>Summary</h2>
-                        <p>0xfffff</p>
+                            <h2>Summary</h2>
+                            <p>0xfffff</p>
                         </Col>
                     </Row>
                 </div>

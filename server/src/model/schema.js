@@ -48,7 +48,7 @@ CREATE TABLE events(
     target          text,
     purpose         text,
     expect_time     float,
-    time_spent      float,
+    time_spent      float NOT NULL DEFAULT 0,
     is_today_event  BOOLEAN NOT NULL DEFAULT FALSE,
     users_id        INTEGER REFERENCES users(id),
     cycle_events_id INTEGER REFERENCES cycle_events(id),

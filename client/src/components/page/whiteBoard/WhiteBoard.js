@@ -1,91 +1,188 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useState, useEffect } from 'react'
 
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import {
+    Row, Col, Table, Radio, Divider, InputNumber
+} from 'antd';
 // import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import Tabs from 'react-bootstrap/Tabs'
-import Tab from 'react-bootstrap/Tab'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
-import { Button} from 'antd';
+import { Button } from 'antd';
 import 'antd/dist/antd.css'
 
-import './whiteBoard.css'
+import { idEventFilter, todayEventsFilter, } from "util/filter"
+import { fetchEvent, modEvent } from 'state/eventSlice'
 import veg_img from './veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
-import _ from 'lodash'
+// import _ from 'lodash'
 import { Safe_el } from 'util/electronUtil'
 import moment from 'moment'
+import { connect } from 'react-redux';
+//import {remB} from 'util/constant'
 
-var remB = 16 //getComputedStyle(document.documentElement).fontSize //this is string
-
+import './whiteBoard.css'
 
 function WBGreet(props) {
-    let timPst = moment()
+    const [now, setNow] = useState(moment())
+    useEffect(
+        () => {
+            const intervalId = setInterval(() => {
+                setNow(moment())
+            }, 1000)
+            return () => {
+                clearInterval(intervalId);
+            }
+        }, []
+    )
+    let timPst = now
     timPst.hour(6)
-    //let timStr= timNow-timPst
-    // reset day start time to specic hour
-    let timeHr = moment().hour() - timPst.hour()
+    let timeHr = now.hour() - timPst.hour()
     if (timeHr < 0) {
         timeHr += 24
     }
     let timStr = `本日已耍廢 ${timeHr}hr, ${timPst.minute()}min, ${timPst.second()}sec`
     return (
         <div>
-            <Container className=' compContainer' >
-                <Row className="h-100 align-items-center mx-auto">
-                    <Col xs={12} className='time-str ' >I just wanna veg...</Col>
-                    <Col xs={12} className=''><img className="vegImg img-thumbnail img-fluid" src={veg_img} /></Col>
-                    <Col xs={12} className='time-str '>{timStr}</Col>
-                    <Col xs={12} className=''>
-                        <Button className='lowerBtn' onClick={(e) => this.setState({ workState: 'WB_choice' })}>work</Button>
-                    </Col>
-                </Row>
-            </Container>
+            <Row className="wb-greet" align="middle">
+                <Col xs={24}></Col>
+                <Col xs={24} className='time-str ' >I just wanna veg...</Col>
+                <Col xs={24} className=''>
+                    <img className="vegImg img-thumbnail img-fluid" src={veg_img} />
+                </Col>
+                <Col xs={24} className='time-str '>{timStr}</Col>
+                <Col xs={24} className=''>
+                    <Button className='lowerBtn' onClick={props.onClick}>work</Button>
+                </Col>
+            </Row>
+
         </div>
     )
+}
+
+
+function WBChoice(props) {
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const todayEvents = props.tdEvents
+    // let colBP = { xs: Math.floor(24 / 5) }
+    const columns = [
+        { title: '[Summary]', dataIndex: 'summary' },
+        { title: '[Target]', dataIndex: 'target' },
+        { title: '[Purpose]', dataIndex: 'purpose' },
+        { title: '[expectTime]', dataIndex: 'expect_time' },
+        {
+            title: '[DueTime]', dataIndex: 'due_time', defaultSortOrder: 'ascend',
+            sorter: (a, b) => a.due_time - b.due_time,
+            render: (text) => <>{moment.unix(text).format("M/D")}</>
+        },
+        {
+            title: '[timeSpent]', dataIndex: 'time_spent',
+            render: (text) => <>{Number((text).toFixed(5))}</>
+        }
+    ]
+    const onSelectCB = (record) => {
+        // console.log('select cb:',record)
+        setSelectedRowKeys([record.id])
+        props.setWorkingEvent(record)
+    }
+    const rowSelection = {
+        selectedRowKeys: selectedRowKeys,
+        onSelect: (record, selected, selectedRows, nativeEvent) => {
+            //console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            // console.log('selectedRows: ', selectedRows)
+            onSelectCB(record)
+        },
+    };
+    return (
+        <div>
+            <Row className="wb-choice" align="middle">
+                <Col xs={24} className='time-str'>Today work</Col>
+                <Col xs={24} >
+                    <div className="tabsBox ">
+                        <Table
+                            rowKey="id"
+                            rowSelection={{
+                                type: "radio",
+                                ...rowSelection,
+                            }}
+                            onRow={(record) => ({
+                                onClick: () => {
+                                    //console.log('onRow record:',record)
+                                    onSelectCB(record)
+                                },
+                            })}
+                            columns={columns}
+                            dataSource={todayEvents}
+                        />
+                    </div>
+                </Col>
+                <Col xs={24}>
+                    <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
+                        onChange={(value) => props.setExpectWorkTime(value)}
+                    />
+                </Col>
+                <Col xs={24} className=''>
+                    <Button className='lowerBtn' onClick={props.onClick} >start</Button>
+                </Col>
+            </Row>
+        </div >
+    )
+}
+
+class WBStart extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            now: moment()
+        }
+        this.interval=moment.duration(this.state.now.diff(this.props.startTime))
+
+    }
+    componentDidMount() {
+        this.intervalId = setInterval(() => {
+            this.setState({ now: moment() })
+            this.interval=moment.duration(this.state.now.diff(this.props.startTime))
+        }, 1000)
+    }
+    componentWillUnmount() {
+        clearInterval(this.intervalId)
+        const interval=this.interval
+        // console.log('wb_start unmount', interval.as('seconds'), interval.as('minutes'), interval.as('hours'))
+        this.props.unMountCB(this.props.workingEvent, interval.as('hours'))
+    }
+
+    render() {
+        const props = this.props
+        // console.log(this.interval.as('minutes'))
+        let missionStr = `To do: ${props.workingEvent.summary}`
+        let timeStr = `${Math.ceil(props.expectWorkTime - this.interval.as('minutes'))} min left`
+        return (
+            <Row className="wb-start" align="middle">
+                <Col xs={24} className='mission-str'>{missionStr}</Col>
+                <Col xs={24} className='count-time-str'>{timeStr}</Col>
+                <Col xs={24}>
+                    <Button
+                        onClick={
+                            () => {
+                                props.stopBtnCB()
+                            }
+                        }>
+                        stop
+                </Button>
+                </Col>
+            </Row>
+        )
+    }
 }
 
 class WhiteBoard extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            //config: {},
-            choosedMission: '',
-            choosedTime: 30,
-            todayWkData: new Array(), //should init, or the first render will cause problem
-            workState: 'WB', //'WB_choice'
-            timNow: new Date(),
-            tickIntervalId: 0,
+            workState: 'WB_greet', //'WB_choice'
+            workingEvent: null,
+            expectWorkTime: 60, //defautl value
         }
-        this.radioFormRef = React.createRef()
-        this.missionType = 'work'
-        this.tabsSelect = {
-            'work': null,
-            'task': null,
-            'life': null
-        }
-        this.startClockTime = new Date()
-        //this.radioValue
-        this.start_btn_click = this.start_btn_click.bind(this)
-        this.handleTabSelec = this.handleTabSelec.bind(this)
-        this.handleRadioChng = this.handleRadioChng.bind(this)
-    }
-
-    getWBConfig() {
-        // let allConfig = JSON.parse(fs.readFileSync('./src/page/config.json', 'utf8'));
-        // let WBConf = allConfig['WB']
-        // this.setState({ config: WBConf })
+        this.startTime = moment()
     }
     componentDidMount() {
-        let intervalId = setInterval(() => {
-            this.setState({ timNow: new Date() })
-        }, 1000);
-        this.setState({ tickIntervalId: intervalId })
-        //https://www.hawatel.com/blog/handle-window-resize-in-react/
-        this.getWBConfig()
-
+        //load user data
         //read today work data
         Safe_el.check(() => {
             let fs = Safe_el.el.remote.require('fs');
@@ -93,120 +190,13 @@ class WhiteBoard extends Component {
             this.setState({ todayWkData: todayWkDataRd })
         })
 
-        //window.addEventListener("resize", this.updateDimensions);
-
     }
     componentWillUnmount() {
-        clearInterval(this.state.tickIntervalId);
-        //https://stackoverflow.com/questions/38564080/remove-event-listener-on-unmount-react
-        //window.removeEventListener("resize", this.updateDimensions);
         this.rollBackNormalWin()
     }
-
-    handleRadioChng(e) {
-        this.tabsSelect[this.missionType] = e.target.value
-    }
-    getRadioWorkList(data, workType) {
-        let fData = data.filter(function (mission) {
-            return mission['type'] === workType
-        })
-
-        return (
-            <Form ref={this.radioFormRef} onChange={this.handleRadioChng}>
-                <div className='mb-3'>
-                    {fData.map((mission, idx) => {
-                        let name = mission['name']
-                        let defaultCheck = false
-                        if (idx === 0) {
-                            defaultCheck = true
-                        }
-                        return (
-                            <Form.Check custom className='workOption' type='radio' id={`${name}-${idx}`}
-                                key={`${name}-${idx}`} value={name} name='selectWork' label={name}
-                            />
-                        )
-                    })}
-                </div>
-            </Form>
-        )
-    }
-    handleTabSelec(e) {
-        this.missionType = e
-    }
-    start_btn_click(e) {
-        if (this.tabsSelect[this.missionType] === null) {
-            //no input
-            return
-        }
-        // normal case trans to other page
+    startBtnClick() {
         this.setState({ workState: 'WB_start' })
-        this.setState({ timNow: new Date() })
-        this.startClockTime = new Date()
-
-    }
-    render_choice() {
-        let timeArr = _.range(5, 95, 5);
-        let tabsArr = ['work', 'task', 'life']
-        return (
-            <div>
-                <Container className='compContainer'>
-                    <Row className="h-100 align-items-center">
-                        <Col xs={12} className='time-str'>Today work</Col>
-                        <Col xs={12} >
-                            <div className="tabsBox ">
-                                <Tabs defaultActiveKey={this.missionType} id="work-select-tab" style={{ marginBottom: remB }}
-                                    onSelect={this.handleTabSelec}>
-                                    {tabsArr.map((tab) => {
-                                        //some problem in tab, cause warning "findDOMNode is deprecated in StrictMode". 
-                                        return (
-                                            <Tab eventKey={tab} title={tab} key={`tab-${tab}`} >
-                                                {this.getRadioWorkList(this.state.todayWkData, tab)}
-                                            </Tab>)
-                                    })}
-                                </Tabs>
-                            </div>
-                        </Col>
-                        <Col xs={12}>
-                            <Form.Group controlId='wkMinSelect' className='mx-auto'>
-                                <Form.Label style={{ display: 'inline' }} className='remindText'>
-                                    <Form.Control as="select" value={this.state.choosedTime}
-                                        onChange={(e) => { this.setState({ choosedTime: e.target.value }) }}
-                                        placeholder="minutes" className='minuteSelect' custom>
-                                        {timeArr.map((i) => {
-                                            return <option key={i} className='selectOpt'> {i}</option>
-                                        })}
-                                    </Form.Control>
-
-                                    {` min left`}
-                                </Form.Label>
-                            </Form.Group>
-                        </Col>
-                        <Col xs={12} className=''>
-                            <Button className='lowerBtn' onClick={this.start_btn_click} >start</Button>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        )
-    }
-    render_start() {
-        //console.log(this.state.choosedMission)
-        //let mission = this.state.config['mission']
-        let missionStr = `To do: ${this.tabsSelect[this.missionType]}`
-        //let timeLefMin = this.state.config['leftMin']
-        let leftTime = this.state.timNow - this.startClockTime
-        leftTime = Math.floor(leftTime / 1000 / 60)  //ms to min
-        let timeStr = `${this.state.choosedTime - leftTime} min left`
-        return (
-            <div>
-                <Container className='compContainer' style={{ minWidth: 50, minHeight: 50 }}>
-                    <Row className="h-100 align-items-center">
-                        <Col xs={12} className='mission-str'>{missionStr}</Col>
-                        <Col xs={12} className='count-time-str'>{timeStr}</Col>
-                    </Row>
-                </Container>
-            </div>
-        )
+        this.startTime = moment()
     }
     rollBackNormalWin() {
         Safe_el.check(() => {
@@ -223,19 +213,55 @@ class WhiteBoard extends Component {
                 currentWindow.setAlwaysOnTop(true, 'screen');
                 currentWindow.setSize(300, 150)
             })
+            //window.resizeTo(300,150) //不能设置那些不是通过 window.open 创建的窗口或 Tab 的大小。
 
         } else {
             this.rollBackNormalWin()
         }
+
         return (
             <div className='whiteboard' >
-                {this.state.workState === 'WB' && <WBGreet/>}
-                {this.state.workState === 'WB_choice' && this.render_choice()}
-                {this.state.workState === 'WB_start' && this.render_start()}
+                {this.state.workState === 'WB_greet' &&
+                    <WBGreet onClick={(e) => this.setState({ workState: 'WB_choice' })} />}
+                {this.state.workState === 'WB_choice' &&
+                    <WBChoice onClick={(e) => this.startBtnClick()}
+                        tdEvents={todayEventsFilter(this.props.events)}
+                        expectWorkTime={this.state.expectWorkTime}
+                        setExpectWorkTime={(expectWorkTime) => {
+                            this.setState({ expectWorkTime })
+                            //console.log(expectWorkTime)
+                        }}
+                        setWorkingEvent={(workingEvent) => {
+                            this.setState({ workingEvent })
+                            //console.log(workingEvent)
+                        }}
+                    />}
+                {this.state.workState === 'WB_start' &&
+                    <WBStart expectWorkTime={this.state.expectWorkTime} startTime={this.startTime}
+                        workingEvent={this.state.workingEvent}
+                        stopBtnCB={() => {
+                            this.setState({ workState: 'WB_greet' })
+                        }}
+                        unMountCB={(event, timeSpent) => {
+                            let newEvent = { ...event }
+                            newEvent.time_spent += timeSpent
+                            this.props.dispatch(modEvent(newEvent))
+                        }}
+                    />
+                }
+                <Button
+                    onClick={() => {
+                        this.props.dispatch(fetchEvent())
+                    }}>
+                    load data
+                </Button>
             </div>
         )
     }
 }
+WhiteBoard = connect(state => ({
+    ...state.event
+}))(WhiteBoard)
 
 
 export default WhiteBoard

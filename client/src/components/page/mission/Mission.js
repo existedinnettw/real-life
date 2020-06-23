@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import {
     Row, Col, Divider,
-    Tabs, Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber
+    Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber
 } from 'antd';
 import 'antd/dist/antd.css'
 
@@ -32,8 +32,6 @@ import './mission.css'
 
 
 const { Option } = Select
-const { TabPane } = Tabs;
-
 
 class RInputRow extends Component {
     constructor(props) {
@@ -264,6 +262,7 @@ class CurrentMission extends Component {
             if (moment.unix(e.due_time).isBetween(lowerBound, upperBound)) {
                 return true
             }
+            return false
         })
         //console.log(finEvents)
         return finEvents
@@ -474,7 +473,7 @@ function TodayWorkDisp(props) {
                                 justify='space-around'>
                                 {colTitle.map((item, idx) => {
                                     return (
-                                        <Col {...colBP} >
+                                        <Col {...colBP} key={idx} >
                                             <Typography.Text  >{item}</Typography.Text>
                                         </Col>
                                     )
@@ -483,7 +482,7 @@ function TodayWorkDisp(props) {
                         }
                         renderItem={item => (
                             <List.Item >
-                                <Row
+                                <Row key={item.id}
                                     style={{
                                         width: '100%'
                                     }}
@@ -499,10 +498,11 @@ function TodayWorkDisp(props) {
                                         {item.purpose}
                                     </Col>
                                     <Col {...colBP}>
-                                        {item.expect_time}
+                                        {item.expectTime}
+                                        {}
                                     </Col>
                                     <Col {...colBP}>
-                                        {item.due_time}
+                                        {moment.unix(item.due_time).format("M/D")}
                                     </Col>
                                 </Row>
                             </List.Item>
@@ -620,11 +620,6 @@ class Mission extends Component {
                                 Click here to login
                     </a>
                         </Button>
-                        <Button onClick={() => {
-                            this.props.dispatch(fetchEvent())
-                        }}>
-                            load data
-                </Button>
 
                         <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
                             {/* <Col >

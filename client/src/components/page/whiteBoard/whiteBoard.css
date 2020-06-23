@@ -7,6 +7,16 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
 .whiteboard{
     text-align: center;
 }
+.wb-greet{
+    height: 100vh;
+}
+.wb-choice{
+    height: 100vh;
+}
+.wb-start{
+    height: 100vh;
+}
+
 
 .mission-str{
     font-size: 1.5rem;
@@ -39,7 +49,6 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
 .minuteSelect{
     /*font-size: 2rem;*/
     display: inline;
-    width: 5rem;
     text-align-last: center;
 }
 .selectOpt{
@@ -65,7 +74,7 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
 
 
 
-.compContainer{
+/* .compContainer{
     position: sticky;
     width: 100vw;
     height: 100vh;
@@ -76,7 +85,7 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
     min-width: 700px;
     min-height: 500px;
     overflow: auto;
-}
+} */
 
 /* .compContainer{
     position: fixed;
