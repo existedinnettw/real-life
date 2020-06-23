@@ -1,67 +1,100 @@
-.title{
+.ms-root {
+    background-image: linear-gradient( rgba(213, 184, 255, 0.5), rgba(0, 0, 0, 0.5)), url(./background.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.bg-fade-mask-enter {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.bg-fade-mask-enter-active {
+    background-color: rgba(255, 255, 255, 0);
+    transition: background-color 500ms;
+}
+
+.bg-fade-mask-exit {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.bg-fade-mask-exit-active {
+    background-color: rgba(255, 255, 255, 1);
+    transition: background-color 500ms;
+}
+
+.title {
     font-size: 2rem;
     margin: 1.5rem;
     text-align: center;
 }
 
-
-.ant-input, .ant-picker-input, .ant-select-selection-search-input{
+.ant-input, .ant-picker-input, .ant-select-selection-search-input {
     text-align: left;
 }
 
-.ant-card{
+.ant-card {
     margin: 1rem auto;
 }
-.ant-card-body{
+
+.ant-card-body {
     padding: .25rem;
 }
 
-.carousel-control-prev, .carousel-control-next{
+.carousel-control-prev, .carousel-control-next {
     width: 5%;
 }
 
-.card, .ant-list-header, .ant-list-item{
+.card, .ant-list-header, .ant-list-item {
     margin: 0.5rem 0.3rem;
-    padding: 0.3rem 1.5rem ;
+    padding: 0.3rem 1.5rem;
     border-radius: .3rem;
-    color: rgb(25,25,25);
-    background-color: rgba(255,255,255,0.99);
-}
-.ant-list-item{
-    background-color: rgba(255,255,255,0.8);
+    color: rgb(25, 25, 25);
+    background-color: rgba(255, 255, 255, 0.99);
 }
 
-.interactive-icon{
+.ant-list-item {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.interactive-icon {
     font-size: 2.5rem;
     margin: 'auto';
     display: 'block';
 }
-.interactive-icon-container{
+
+.interactive-icon-container {
     border-style: solid;
     border-radius: 1rem;
     background-color: rgba(255, 234, 234, 0.993);
     margin: 1rem 1rem 3rem 1rem;
     height: 4.5rem;
 }
-.interactive-icon-container-hover{
-    transform: scale(1.2); /* Equal to scaleX(0.7) scaleY(0.7) */
+
+.interactive-icon-container-hover {
+    transform: scale(1.2);
+    /* Equal to scaleX(0.7) scaleY(0.7) */
     background-color: rgba(153, 51, 255, 0.95);
     color: white;
 }
 
-.switch-icon{
+.switch-icon {
     font-size: 2rem;
     margin: 'auto';
     display: 'block';
 }
-.switch-icon-container{
+
+.switch-icon-container {
     border-style: solid;
     border-radius: 1rem;
     margin: 1rem 1rem 3rem 1rem;
     height: 4rem;
 }
-.config-p{
-    font-size:1rem;
+
+.config-p {
+    font-size: 1rem;
     text-align: left;
     margin: .5rem;
 }

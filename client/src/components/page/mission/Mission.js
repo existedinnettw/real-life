@@ -1,25 +1,34 @@
 import React, { Component, useState } from 'react'
-import { Row, Col, Divider } from 'antd';
-import { Tabs, Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber } from 'antd';
+import {
+    Row, Col, Divider,
+    Tabs, Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber
+} from 'antd';
+import 'antd/dist/antd.css'
+
 import Carousel from 'react-bootstrap/Carousel'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'antd/dist/antd.css'
-import './mission.css'
-import { PlusOutlined, DeleteOutlined, CarryOutOutlined, CloseOutlined } from '@ant-design/icons';
-import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
+
+import {
+    PlusOutlined,
+    CarryOutOutlined, ImportOutlined, ExportOutlined, DeleteOutlined,
+} from '@ant-design/icons';
+// import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
 import { purple, grey } from '@ant-design/colors';
 import { Safe_el, rm } from 'util/electronUtil'
 import { remB } from 'util/constant'
 import { motion } from "framer-motion"
-import Background from './background.jpg';
+// import Background from './background.jpg';
 import { connect } from 'react-redux';
-import eventSlice, { fetchEvent, addEvent, rmvEvent } from 'state/eventSlice'
-import { Link } from 'react-router-dom'
+import eventSlice, { fetchEvent, addEvent, modEvent, rmvEvent } from 'state/eventSlice'
 import moment from 'moment'
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { ItemTypes } from 'util/constant'
 import { useDrag, useDrop } from "react-dnd";
+import { idEventFilter, todayEventsFilter, unDoneEventsFilter } from "util/filter"
+import { CSSTransition } from "react-transition-group";
+
+import './mission.css'
 
 
 const { Option } = Select
@@ -34,7 +43,7 @@ class RInputRow extends Component {
             target: '',
             purpose: '',
             initTime: moment(), //moment object, when transfer use moment.unix()
-            dueTime: moment(),
+            dueTime: moment().add(1, 'days'),
             expectTime: 1.5
         }
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -51,7 +60,8 @@ class RInputRow extends Component {
     //render place for input
     render() {
         return (
-            <Row justify='left' gutter={[{ xs: 4, sm: 16, md: 16, lg: 2 * remB }, { xs: 2, sm: 8, md: 8, lg: remB }]}>
+            <Row justify='left'
+                gutter={[{ xs: 4, sm: 16, md: 16, lg: 2 * remB }, { xs: 2, sm: 8, md: 8, lg: remB }]}>
                 <Col xs={8}>
                     <Input placeholder="event summary"
                         value={this.state.summary}
@@ -85,7 +95,7 @@ class RInputRow extends Component {
                         parser={value => value.replace('hr', '')}
                         onChange={val => this.setState({ expectTime: val })} />
                 </Col>
-                <Col xs={5} style={{ marginBottom: 1.5 * remB }} >
+                <Col xs={5} >
                     <Button onClick={this.handleSubmit}
                         icon={<PlusOutlined style={{ margin: 'auto', display: 'block' }} />}>
                     </Button>
@@ -188,7 +198,7 @@ function ScheCard(props) {
 }
 
 function DropIcon({ tooltipStr, onDrop, children }) {
-    const [bottom, setBottom] = useState(0);
+    //const [bottom, setBottom] = useState(0);
     const [{ isOver, canDrop }, drop] = useDrop({
         accept: ItemTypes.CARD, //this value will pass to item
         drop: (item, mon) => {
@@ -208,15 +218,13 @@ function DropIcon({ tooltipStr, onDrop, children }) {
         className += ' interactive-icon-container-hover'
     }
     return (
-        <Affix offsetBottom={bottom}>
-            <Tooltip title={tooltipStr}>
-                <Button ref={drop}
-                    className={className}
-                >
-                    {children}
-                </Button>
-            </Tooltip>
-        </Affix>
+        <Tooltip title={tooltipStr}>
+            <Button ref={drop}
+                className={className}
+            >
+                {children}
+            </Button>
+        </Tooltip>
     )
 }
 
@@ -271,7 +279,8 @@ class CurrentMission extends Component {
                         <RInputRow />
                     </Col>
                 </Row>
-                <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
+                {/* <Divider style={{ backgroundColor: 'rgba(0,0,0,0)', color:'rgba()' }}></Divider> */}
+                <div style={{ padding: '.3rem' }}></div>
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
                     <Col xs={24} sm={12} lg={6}>
                         < ScheCard titleStr='outdated' dataArr={this.eventsFilter('outdated')} />
@@ -286,24 +295,50 @@ class CurrentMission extends Component {
                         < ScheCard titleStr='6 month' dataArr={this.eventsFilter('6Month')} />
                     </Col>
                 </Row>
-                <Row justify='left' style={{ width: '80%', margin: '0 auto' }}>
-                    <Col>
-                        <DropIcon onDrop={(eID) => { }}>
-                            <CarryOutOutlined className='interactive-icon' />
-                        </DropIcon>
-                    </Col>
-                    <Col>
-                        <DropIcon onDrop={(eID) => { }}>
-                            <CloseOutlined className='interactive-icon' />
-                        </DropIcon>
-                    </Col>
-                    <Col>
-                        <DropIcon tooltipStr={'drag event over to delete it'}
-                            onDrop={(eID) => { this.props.dispatch(rmvEvent(eID)) }}>
-                            <DeleteOutlined className='interactive-icon' />
-                        </DropIcon>
-                    </Col>
-                </Row>
+                <Affix offsetBottom={0}>
+                    <Row justify='left' style={{ width: '80%', margin: '0 auto' }}>
+                        <Col>
+                            <DropIcon tooltipStr={'drag event over to mark event finished'}
+                                onDrop={(eID) => {
+                                    let event = idEventFilter(this.props.events, eID)
+                                    let newEvent = { ...event, done_ts: moment() }
+                                    this.props.dispatch(modEvent(newEvent))
+                                }}>
+                                <CarryOutOutlined className='interactive-icon' />
+                            </DropIcon>
+                        </Col>
+                        <Col>
+                            <DropIcon tooltipStr={'drag event over to add to today work'}
+                                onDrop={(eID) => {
+                                    //modify is today event
+                                    let event = idEventFilter(this.props.events, eID)
+                                    let newEvent = { ...event, is_today_event: true }
+                                    this.props.dispatch(modEvent(newEvent))
+                                }}>
+                                <ImportOutlined className='interactive-icon' />
+                            </DropIcon>
+                        </Col>
+                        <Col>
+                            <DropIcon tooltipStr={'drag event over to cancel from today work'}
+                                onDrop={(eID) => {
+                                    //modify is today event
+                                    let event = idEventFilter(this.props.events, eID)
+                                    let newEvent = { ...event, is_today_event: false }
+                                    this.props.dispatch(modEvent(newEvent))
+                                }}>
+                                <ExportOutlined className='interactive-icon' />
+                            </DropIcon>
+                        </Col>
+                        <Col>
+                            <DropIcon tooltipStr={'drag event over to delete it'}
+                                onDrop={(eID) => {
+                                    this.props.dispatch(rmvEvent(eID))
+                                }}>
+                                <DeleteOutlined className='interactive-icon' />
+                            </DropIcon>
+                        </Col>
+                    </Row>
+                </Affix>
 
             </div>
         )
@@ -404,6 +439,9 @@ class MissionConfig extends Component {
 }
 
 function TodayWorkDisp(props) {
+    const todayEvents = todayEventsFilter(props.events)
+    let colBP = { xs: Math.floor(24 / 5) }
+    const colTitle = ['[Summary]', '[Target]', '[Purpose]', '[expectTime]', '[DueTime]']
     return (
         <motion.div
             initial={{ scale: 0 }}
@@ -412,33 +450,35 @@ function TodayWorkDisp(props) {
                 type: "spring",
                 stiffness: 160,
                 damping: 20
+            }}
+            style={{
+                background: purple[3], color: 'white',
+                borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98',
+                margin: '1.5rem 1rem 2rem 1rem',
+                padding: '0 0 1rem 0',
             }}>
             <Row justify='center' >
                 <Col xs={24} className='title'>
                     Today work
-            </Col>
+                </Col>
                 <Col xs={24} style={{ padding: '0 1.5rem' }}>
                     <List
                         split={false}
-                        dataSource={props.events}
-
+                        dataSource={todayEvents}
                         header={
                             <Row
                                 style={{
-                                    fontWeight: 600
-                                }}>
-                                <Col xs={6}>
-                                    <Typography.Text keyboard="true" >[Summary]</Typography.Text>
-                                </Col>
-                                <Col xs={6}>
-                                    <Typography.Text keyboard="true" >[Target]</Typography.Text>
-                                </Col>
-                                <Col xs={6}>
-                                    <Typography.Text keyboard="true" >[Purpose]</Typography.Text>
-                                </Col>
-                                <Col xs={6}>
-                                    <Typography.Text keyboard="true" >[DueTime]</Typography.Text>
-                                </Col>
+                                    fontWeight: 600,
+                                    color: 'black'
+                                }}
+                                justify='space-around'>
+                                {colTitle.map((item, idx) => {
+                                    return (
+                                        <Col {...colBP} >
+                                            <Typography.Text  >{item}</Typography.Text>
+                                        </Col>
+                                    )
+                                })}
                             </Row>
                         }
                         renderItem={item => (
@@ -446,17 +486,22 @@ function TodayWorkDisp(props) {
                                 <Row
                                     style={{
                                         width: '100%'
-                                    }}>
-                                    <Col xs={6}>
+                                    }}
+                                    justify='space-around'>
+                                    {/* maybe use object literal? */}
+                                    <Col {...colBP}>
                                         {item.summary}
                                     </Col>
-                                    <Col xs={6}>
+                                    <Col {...colBP}>
                                         {item.target}
                                     </Col>
-                                    <Col xs={6}>
+                                    <Col {...colBP}>
                                         {item.purpose}
                                     </Col>
-                                    <Col xs={6}>
+                                    <Col {...colBP}>
+                                        {item.expect_time}
+                                    </Col>
+                                    <Col {...colBP}>
                                         {item.due_time}
                                     </Col>
                                 </Row>
@@ -467,10 +512,73 @@ function TodayWorkDisp(props) {
         </motion.div>
     )
 }
-TodayWorkDisp= connect(state => ({
+TodayWorkDisp = connect(state => ({
     ...state.event
 }))(TodayWorkDisp)
 
+function EventsDisp(props) {
+    let carouselStyle = {
+        background: `${purple[3]}`,
+        overflow: 'hidden',
+        color: 'white',
+        minHeight: '40vh',
+        borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 ',
+    }
+    return (
+        <motion.div initial={{ scale: 0 }}
+            animate={{ rotate: 0, scale: 1 }}
+            transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20
+            }}>
+            <Carousel interval={null} style={carouselStyle}>
+
+                <Carousel.Item>
+                    <DndProvider backend={HTML5Backend}>
+                        <CurrentMission />
+                        {/* <Carousel.Caption>
+                    <h3>First slide label</h3>
+                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                </Carousel.Caption> */}
+                    </DndProvider>
+                </Carousel.Item>
+
+                <Carousel.Item>
+                    <PWork />
+                </Carousel.Item>
+
+                <Carousel.Item>
+                    <MissionConfig />
+                </Carousel.Item>
+
+            </Carousel>
+        </motion.div>
+    )
+}
+// function delayUnmounting(Component) {
+//     //https://medium.com/@tomaszferens/delay-unmounting-of-the-component-in-react-8d6f6e73cdc
+//     return class extends React.Component {
+//         state = {
+//             shouldRender: this.props.isMounted
+//         };
+
+//         componentDidUpdate(prevProps) {
+//             if (prevProps.isMounted && !this.props.isMounted) {
+//                 setTimeout(
+//                     () => this.setState({ shouldRender: false }),
+//                     this.props.delayTime
+//                 );
+//             } else if (!prevProps.isMounted && this.props.isMounted) {
+//                 this.setState({ shouldRender: true });
+//             }
+//         }
+
+//         render() {
+//             return this.state.shouldRender ? <Component {...this.props} /> : null;
+//         }
+//     };
+// }
 class Mission extends Component {
     constructor(props) {
         super(props)
@@ -478,104 +586,48 @@ class Mission extends Component {
             dueMonth: 1,
             dueDay: 1,
             workType: ['work', 'task', 'life'],
-
+            inProp: false,
         }
-
     }
     componentDidMount() {
         Safe_el.check(() => {
             let currentWindow = rm.getCurrentWindow()
             currentWindow.setSize(1000, 1000)
         })
-        let { chngLayoutStyle } = this.props
-        chngLayoutStyle({
-
-            backgroundImage: `linear-gradient(to bottom, rgba(213, 184, 255, 0.5), rgba(0,0,0,0.5)), url(${Background})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundAttachment: 'fixed',
-            backgroundPosition: 'center',
-            backgroundSize: 'cover',
-        })
         //fetching data into store
+        this.setState({ inProp: true })
     }
 
-    renderCarousel() {
-        let carouselStyle = {
-            background: `${purple[3]}`,
-            overflow: 'hidden',
-            color: 'white',
-            minHeight: '40vh',
-            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 ',
-        }
-        return (
-            <motion.div initial={{ scale: 0 }}
-                animate={{ rotate: 0, scale: 1 }}
-                transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 20
-                }}>
-                <Carousel interval={null} style={carouselStyle}>
-
-                    <Carousel.Item>
-                        <DndProvider backend={HTML5Backend}>
-                            <CurrentMission />
-                            {/* <Carousel.Caption>
-                        <h3>First slide label</h3>
-                        <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                    </Carousel.Caption> */}
-                        </DndProvider>
-                    </Carousel.Item>
-
-                    <Carousel.Item>
-                        <PWork />
-                    </Carousel.Item>
-
-                    <Carousel.Item>
-                        <MissionConfig />
-                    </Carousel.Item>
-
-                </Carousel>
-            </motion.div>
-        )
-    }
     render() {
         const rwdColBP = { xs: 23, lg: 21, xl: 20, xxl: 16 }
         return (
-            <div style={{
-                padding: '2rem 1rem'
-            }}>
-                <Row justify='center'>
-                    <Col {...rwdColBP}
-                        style={{
-                            background: purple[3], color: 'white',
-                            borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98',
-                            margin: '1.5rem 1rem 2rem 1rem',
-                            padding: '0 0 1rem 0'
-                        }}
-                    >
-                        <TodayWorkDisp/>
-                    </Col>
-                </Row>
-                <Row justify='center' style={{ margin: '0 0' }}>
-                    <Col {...rwdColBP} >
-                        {this.renderCarousel()}
-                    </Col>
-                </Row>
-                <Button>
-                    {/* these place have to remove later */}
-                    <a href={`${process.env.BASE_URL}/auth/google`}>
-                        Click here to login
+            <div className={'ms-root'} >
+                <CSSTransition in={this.state.inProp} timeout={1000} classNames="bg-fade-mask" unmountOnExit>
+                    <div style={{ padding: '2rem 1rem' }}>
+                        <Row justify='center' >
+                            <Col {...rwdColBP}>
+                                <TodayWorkDisp />
+                            </Col>
+                        </Row>
+                        <Row justify='center' style={{ margin: '0 0' }}>
+                            <Col {...rwdColBP} >
+                                <EventsDisp />
+                            </Col>
+                        </Row>
+                        <Button>
+                            {/* these place have to remove later */}
+                            <a href={`${process.env.BASE_URL}/auth/google`}>
+                                Click here to login
                     </a>
-                </Button>
-                <Button onClick={() => {
-                    this.props.dispatch(fetchEvent())
-                }}>
-                    load data
+                        </Button>
+                        <Button onClick={() => {
+                            this.props.dispatch(fetchEvent())
+                        }}>
+                            load data
                 </Button>
 
-                <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
-                    {/* <Col >
+                        <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
+                            {/* <Col >
                         <Button className='switch-icon-container' >
                             <CalendarOutlined className='switch-icon' />
                         </Button>
@@ -590,12 +642,14 @@ class Mission extends Component {
                             <ToolOutlined className='switch-icon' />
                         </Button>
                     </Col> */}
-                </Row>
-            </div >
+                        </Row>
+                    </div >
+                </CSSTransition>
+            </div>
         )
     }
 }
-
+//Mission=delayUnmounting(Mission)
 export default connect(state => ({
     ...state.event
 }))(Mission)

@@ -1,6 +1,7 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { listEvents, createEvent, delEvent } from "api/event"
+import { listEvents, createEvent, delEvent, updateEvent } from "api/event"
+import {ascDueTEventsSort} from "util/filter"
 import _ from 'lodash'
 
 // event STATE
@@ -21,6 +22,13 @@ export const fetchEvent = createAsyncThunk('event/fetchEvent',
 export const addEvent = createAsyncThunk('event/addEvent',
     async (payload, thunkAPI) => {
         const response = await createEvent(payload)
+        //console.log(response)
+        return response
+    }
+)
+export const modEvent = createAsyncThunk('event/modEvent',
+    async (payload, thunkAPI) => {
+        const response = await updateEvent(payload)
         //console.log(response)
         return response
     }
@@ -50,7 +58,7 @@ const eventSlice = createSlice({
             state.eventLoadingCount+=1
         },
         [fetchEvent.fulfilled]: (state, action) => {
-            state.events = action.payload  //state.events.concat(action.payload)
+            state.events = ascDueTEventsSort(action.payload)  //state.events.concat(action.payload)
             state.eventLoadingCount-=1
         },
         [fetchEvent.rejected]: (state, action) => {
@@ -63,10 +71,28 @@ const eventSlice = createSlice({
             state.eventLoadingCount+=1
         },
         [addEvent.fulfilled]: (state, action) => {
-            state.events = [action.payload, ...state.events]
+            state.events = ascDueTEventsSort([action.payload, ...state.events])
             state.eventLoadingCount-=1
         },
         [addEvent.rejected]: (state, action) => {
+            state.eventLoadingCount-=1
+            console.log(`async action reject:`,action.error)
+        },
+
+        /*********modify events***********/
+        [modEvent.pending]: (state, action) => {
+            state.eventLoadingCount+=1
+        },
+        [modEvent.fulfilled]: (state, action) => {
+            //action.payload
+            //console.log(action.payload)
+            let events=state.events.filter(e=>{
+                return e.id!==action.payload.id
+            })
+            state.events = ascDueTEventsSort([action.payload,...events])
+            state.eventLoadingCount-=1
+        },
+        [modEvent.rejected]: (state, action) => {
             state.eventLoadingCount-=1
             console.log(`async action reject:`,action.error)
         },
@@ -78,7 +104,7 @@ const eventSlice = createSlice({
         [rmvEvent.fulfilled]: (state, action) => {
             //currently, delete only only return 1 entry
             state.events= state.events.filter((item,idx)=>{
-                return item.id!=action.payload[0].id
+                return item.id!==action.payload[0].id
             })
             state.eventLoadingCount-=1
         },

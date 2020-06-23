@@ -1,18 +1,21 @@
 import React, { Component } from 'react'
-import './navBar.css'
-import SideNav from 'react-simple-sidenav'
-import Button from 'react-bootstrap/Button'
-import 'bootstrap/dist/css/bootstrap.min.css'
+
+import SideNav from 'react-simple-sidenav';
+
+import { Button } from 'antd';
+import 'antd/dist/antd.css'
+
 import { Link } from 'react-router-dom'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAlignLeft } from '@fortawesome/free-solid-svg-icons'
 
-class NavBarItems extends Component {
-    render(props) {
-        return (
-            <Link className="option" to={this.props.path}> {this.props.itemsName}</Link>
-        )
-    }
+import './navBar.css' //should put behind than antd css
+
+function NavBarItem(props) {
+    return (
+        <Link className="nav-bar-item" to={props.path}> {props.itemName}</Link>
+    )
 }
 
 class NavBar extends Component {
@@ -29,22 +32,38 @@ class NavBar extends Component {
     }
 
     render() {
-        //console.log(this.state.showNav)
         return (
             <div >
-                <div className='header'>
-                <Button className='navBtn' variant='primary' style={{zIndex:80}}
-                onClick={(e) => { this.setState({ showNav: !this.state.showNav }) }}>
-                    <FontAwesomeIcon icon={faAlignLeft} />
-                </Button>
+                <div className='tp-header'>
+                    <div className='nav-btn'
+                        onClick={(e) => { this.setState({ showNav: true }) }}
+                        onMouseOver={() => this.setState({ showNav: true })}
+                    >
+                        {/* <FontAwesomeIcon icon={faAlignLeft} /> */}
+                    </div>
                 </div>
-                <SideNav className='navBar' showNav={this.state.showNav} style={{zIndex:99}}
-                onHideNav={() => this.setState({ showNav: false })}>
+
+                <SideNav showNav={this.state.showNav}
+                    style={{ zIndex: 99, }}
+                    navStyle={{ backgroundColor: 'rgba(0,0,0,0.5)', width: '20rem' }}
+                    onHideNav={() => this.setState({ showNav: false })}
+                    onMouseOut={() => this.setState({ showNav: false })}
+                >
+                    <div className='nav-btn' style={{display:'flex',flexDirection:'column' ,width:'20rem'}}
+                    onMouseLeave={() => this.setState({ showNav: false })}
+                    >
+                    {/* can put e.g. login here */}
+                    <div className='nav-bar-title'>Real-Life</div>
                     {
                         Object.keys(this.itemsNames).map((key, idx) => {
-                            return (<NavBarItems itemsName={key} key={idx} path={this.itemsNames[key]} />)
+                            return (
+                                <NavBarItem itemName={key} key={idx} path={this.itemsNames[key]}
+                                />
+                            )
                         })
                     }
+                    
+                    </div>
                 </SideNav>
             </div>
         )

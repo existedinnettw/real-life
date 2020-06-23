@@ -51,7 +51,8 @@ CREATE TABLE events(
     time_spent      float,
     is_today_event  BOOLEAN NOT NULL DEFAULT FALSE,
     users_id        INTEGER REFERENCES users(id),
-    cycle_events_id INTEGER REFERENCES cycle_events(id)
+    cycle_events_id INTEGER REFERENCES cycle_events(id),
+    p_event_id      INTEGER REFERENCES events(id)
 );
 
 `

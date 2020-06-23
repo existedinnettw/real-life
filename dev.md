@@ -34,28 +34,6 @@ UI加強，我認為講明就是對設計的好看不夠滿意。
 
 顏色上要注意我沒有必要非專注在純紫色，偏紅、偏藍都可以，甚至是單純把opacity 降低。
 
-## animation
-
-[5 Ways to animate a React app.](https://medium.com/@dmitrynozhenko/5-ways-to-animate-a-reactjs-app-in-2019-56eb9af6e3bf)
-
-
-
-* ReactTransitionGroup
-  * 最原生
-* react-animation
-  * 看起來很多種類
-* framer-motion
-  * demo 看起來不錯，api 看起來簡單
-  * 目前使用中
-* ant-motion
-  * maybe good with antd
-
-### framer motion
-
-* 有scroll
-
-
-
 
 
 # 規劃
@@ -438,13 +416,19 @@ electron 弄成 if 執行
 
 6/7
 
-一個大麻煩，Oauth 不能cros。所以我要改完之後立刻build，然後馬上copy到server/build。我用react-rewire 把dev server 的設定改成writeToDisk，這讓npm start 就像 npm build watch mode。然後在webpack 的設定使用fileManagerPlugin 去copy build 裡的data 到server/build。
+一個大麻煩，Oauth 不能cros。所以我要改完之後立刻build，然後馬上copy到server/build。
+
+我用react-rewire 把dev server 的設定改成writeToDisk，這讓npm start 就像 npm build watch mode。然後在webpack 的設定使用fileManagerPlugin 去copy build 裡的data 到server/build。
 
 另一個方法是不copy，express 的use static 直接指定client 資料夾，然後nodemon watch client/build。但是這超出server folder所以不推。
 
 [How to create multiple output paths in Webpack config](https://stackoverflow.com/questions/35903246/how-to-create-multiple-output-paths-in-webpack-config/59019896#59019896)
 
-unuseful
+用FileManagerPlugin 去把 build 的folder copy
+
+> 這方法有問題
+
+---
 
 * [react-app-rewire-build-dev](https://github.com/raodurgesh/react-app-rewire-build-dev#readme)
   * 沒更新，但有提供最新解
@@ -461,6 +445,8 @@ ERR_CONNECTION_REFUSED
 
 目前放棄 livereload
 
+---
+
 改用gulp + browser sync 後 ~~還是有error~~ ，
 
 > in chrome
@@ -473,7 +459,7 @@ ERR_CONNECTION_REFUSED
 
 ---
 
-好像事實上是可以直用proxy 開dev server的？？ 結果確實是可以開proxy，但是redirect 就會從port3000(client) 轉到port 4000 (server)，而且proxy 好像不能直接setcookie? [webpack-dev-server set cookie via proxy](https://stackoverflow.com/questions/56377371/webpack-dev-server-set-cookie-via-proxy) 。轉到port 4000 後也就不會auto reload了
+好像事實上是可以直用proxy 開dev server的？？ 結果確實是可以開proxy，但是redirect 就會從port3000(client) 轉到port 4000 (server)，而且proxy 好像不能直接setcookie? [webpack-dev-server set cookie via proxy](https://stackoverflow.com/questions/56377371/webpack-dev-server-set-cookie-via-proxy) 。轉到port 4000 後也就不會auto reload了，所以意義其實不大。
 
 ---
 
@@ -503,8 +489,55 @@ ERR_CONNECTION_REFUSED
 
 6/19
 
-today event, local process
+完成 drag and drop 
 
+* [react DnD Tutorial](https://react-dnd.github.io/react-dnd/docs/tutorial)
+  * 有點囉嗦，寫法有點怪，但是是最好的入門。用了flux的地方可能會看不太懂
+* [React DnD | 實現可拖曳的任務牆](https://medium.com/%E6%89%8B%E5%AF%AB%E7%AD%86%E8%A8%98/react-dnd-implement-task-board-16ce7f67289c)
+  * 不適合入門，但適合補足tutorial 缺的部份
 
+---
+
+先前的 FileManagerPlugin copy 有問題，dev server 的dev build 是有更改就重新creat 一個build檔案，FileManagerPlugin copy 是整重copy，所以隨著用越久dev server，copy time 會超慢。
+
+解法，用 Lsyncd
+
+[Linux: Continuously synchronize files, one way](https://superuser.com/questions/317820/linux-continuously-synchronize-files-one-way)
+
+[lsyncd Config Layer 4: Default Config](https://axkibe.github.io/lsyncd/manual/config/layer4/)
+
+只會copy 新檔，所以copy 很快。大部份是舊檔 nodemon 也不用比對很久。從原本8sec reload 變成 馬上 reload 完。
+
+**要特別注意，source -> target 都是folder 對 folder sync，千萬不要選成上一層folder (和copy , rsync 不一樣)**
+
+---
+
+上面那個我第一次不查，結果整個 server folder 全部被override 成build。還好有git（終於體會git 是救命神器）。
 
 `git restore --source=HEAD --staged --worktree -- ./server`
+
+這個 commnad 回復最後的commit，並且只回復 ./server folder。
+
+---
+
+一直在思考redux store 裡，到底要不要 todayEvent 。結論是不要，因為追朔state的定義，todayEvent 並沒有表達狀態的不同，today event 只是 event的subset，evnet 的其中一表現方式而已。但有today event 還是方便，所以寫相對應的filter 來filter event 就好。
+
+
+
+
+
+6/20
+
+fin events api
+
+may do:
+
+* auth
+* div --> body background
+* layout 打掉換antd layout?
+* is today event change color
+* 完成 WB，因為它是最核心功能。
+
+
+
+temp Stop for eng presentation

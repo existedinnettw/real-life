@@ -39,6 +39,18 @@ eventRouter.post('/events', function(req,res,next){
         
     }).catch(next) //to error handle
 })
+eventRouter.put('/events/:id',function(req,res,next){
+    const email=req.user.emails[0].value
+    usersModel.list(email).then(rst=>{
+        const userID= rst.id
+        const {id} = req.params;
+        console.log(req.body)
+        eventsModel.update(id, userID, req.body ).then(events=>{
+            res.json(events) //return events
+        })
+        
+    }).catch(next) //to error handle
+})
 eventRouter.delete('/events/:id', function(req,res,next){
     const email=req.user.emails[0].value
     usersModel.list(email).then(rst=>{

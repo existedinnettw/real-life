@@ -1,18 +1,51 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
+
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import Button from 'react-bootstrap/Button'
-import './whiteBoard.css'
-import veg_img from './veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
+// import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import _ from 'lodash'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
+import 'bootstrap/dist/css/bootstrap.min.css'
+
+import { Button} from 'antd';
+import 'antd/dist/antd.css'
+
+import './whiteBoard.css'
+import veg_img from './veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
+import _ from 'lodash'
 import { Safe_el } from 'util/electronUtil'
+import moment from 'moment'
 
 var remB = 16 //getComputedStyle(document.documentElement).fontSize //this is string
+
+
+function WBGreet(props) {
+    let timPst = moment()
+    timPst.hour(6)
+    //let timStr= timNow-timPst
+    // reset day start time to specic hour
+    let timeHr = moment().hour() - timPst.hour()
+    if (timeHr < 0) {
+        timeHr += 24
+    }
+    let timStr = `本日已耍廢 ${timeHr}hr, ${timPst.minute()}min, ${timPst.second()}sec`
+    return (
+        <div>
+            <Container className=' compContainer' >
+                <Row className="h-100 align-items-center mx-auto">
+                    <Col xs={12} className='time-str ' >I just wanna veg...</Col>
+                    <Col xs={12} className=''><img className="vegImg img-thumbnail img-fluid" src={veg_img} /></Col>
+                    <Col xs={12} className='time-str '>{timStr}</Col>
+                    <Col xs={12} className=''>
+                        <Button className='lowerBtn' onClick={(e) => this.setState({ workState: 'WB_choice' })}>work</Button>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
+    )
+}
 
 class WhiteBoard extends Component {
     constructor(props) {
@@ -69,31 +102,7 @@ class WhiteBoard extends Component {
         //window.removeEventListener("resize", this.updateDimensions);
         this.rollBackNormalWin()
     }
-    render_wb() {
-        let timPst = new Date()
-        timPst.setHours(6)
-        //let timStr= timNow-timPst
-        // reset day start time to specic hour
-        let timeHr = this.state.timNow.getHours() - timPst.getHours()
-        if (timeHr < 0) {
-            timeHr += 24
-        }
-        let timStr = `本日已耍廢 ${timeHr}hr, ${this.state.timNow.getMinutes()}min, ${this.state.timNow.getSeconds()}sec`
-        return (
-            <div>
-                <Container className=' compContainer' >
-                    <Row className="h-100 align-items-center mx-auto">
-                        <Col xs={12} className='time-str ' >I just wanna veg...</Col>
-                        <Col xs={12} className=''><img className="vegImg img-thumbnail img-fluid" src={veg_img} /></Col>
-                        <Col xs={12} className='time-str '>{timStr}</Col>
-                        <Col xs={12} className=''>
-                            <Button className='lowerBtn' onClick={(e) => this.setState({ workState: 'WB_choice' })}>work</Button>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        )
-    }
+
     handleRadioChng(e) {
         this.tabsSelect[this.missionType] = e.target.value
     }
@@ -220,7 +229,7 @@ class WhiteBoard extends Component {
         }
         return (
             <div className='whiteboard' >
-                {this.state.workState === 'WB' && this.render_wb()}
+                {this.state.workState === 'WB' && <WBGreet/>}
                 {this.state.workState === 'WB_choice' && this.render_choice()}
                 {this.state.workState === 'WB_start' && this.render_start()}
             </div>

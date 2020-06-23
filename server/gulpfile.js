@@ -21,13 +21,12 @@ gulp.task('server', function () {
         env: {
             'NODE_ENV': 'development'
         },
-        delay:1000
+        delay:500
     }).on('start', function () {
         browserSync.init({
             proxy: 'http://localhost:4000',
             files: ["public/**/*.*", "views/**", "routes/**", "build/**"],
             port: 8080,
-            reloadDelay: 1000
         }, function () {
             console.log("browser refreshed.");
         });

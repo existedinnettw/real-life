@@ -7,40 +7,6 @@ import axios from 'axios'
 const baseUrl = process.env.API_URL
 
 export function listEvents(searchText = '') {
-
-    // let now= moment()
-    // let lowerBound
-    // let upperBound
-    // switch (period) {
-    //     case 'outdated':
-    //         lowerBound=now.subtract(30,'days')
-    //         upperBound=now
-    //         break
-    //     case 'today':
-    //         lowerBound=now
-    //         upperBound=now.add(1, 'days')
-    //         break
-    //     case 'oneWeek':
-    //         lowerBound=now.add(1, 'days')
-    //         upperBound=now.add(7, 'days')
-    //         break
-    //     case 'oneMonth':
-    //         lowerBound=now.add(7, 'days')
-    //         upperBound=now.add(30, 'days')
-    //         break
-    //     case '6Month':
-    //         lowerBound=now.add(30, 'days')
-    //         upperBound=now.add(30*6, 'days')
-    //         break
-    //     default:
-    //         console.log('you pass the wrong period in.')
-    //         return
-    // }
-    // let finEvents=typedEvents.filter((e)=>{
-    //     if(moment.isBetwwen(lowerBound,upperBound)){
-    //         return true
-    //     }
-    // })
     let url = `${baseUrl}/events`
     let query = []
     if (searchText)
@@ -75,9 +41,22 @@ export function createEvent(payload) {
     }).then(function(res) {
         if (res.status !== 200)
             throw new Error(`Unexpected response code: ${res.status}`);
-
         return res.data;
     });
+}
+
+export function updateEvent({id,...rest}){
+    //should include event ID, id is event id
+    let url = `${baseUrl}/events/${id}`
+    console.log(`Making put request to: ${url}`)
+    let valueToModify=rest
+    return axios.put(url,{
+        ...valueToModify
+    }).then(function(res){
+        if (res.status!==200)
+            throw new Error(`Unexpected response code: ${res.status}`);
+        return res.data;
+    })
 }
 
 export function delEvent(eventID){
@@ -91,3 +70,4 @@ export function delEvent(eventID){
         return res.data;
     });
 }
+
