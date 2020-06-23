@@ -3,7 +3,7 @@ const { eventRouter } = require("./routers/event.js")
 const { authRouter } = require("./routers/auth.js")
 const { isAuthenticated } = require('./routers/auth')
 const path = require('path');
-const { port } = require('../config')
+const { port, callbackURL } = require('../config')
 const cookieSession = require("cookie-session")
 const cors = require('cors');
 const passport = require('passport')
@@ -45,6 +45,7 @@ app.get('/*', (req, res) => res.redirect('/'))//unknow path redirect back, or sh
 
 const server= app.listen(port, () => {
     console.log(`server is runing on port ${port} ...`)
+    console.log(`cb url ${callbackURL}`)
 })
 
 

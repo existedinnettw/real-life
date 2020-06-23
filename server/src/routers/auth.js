@@ -1,13 +1,13 @@
 const express = require('express')
 const passport = require('passport')
-const {port} = require('../../config')
+const {callbackURL} = require('../../config')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 passport.use(new GoogleStrategy(
     {
         clientID: process.env.googleClientID,
         clientSecret: process.env.googleClientSecret,
-        callbackURL: `http://localhost:${port}/auth/google/callback`
+        callbackURL: callbackURL
     },
     function (req, accessToken, refreshToken, profile, done) { //the function is fixed
         //function execute after consent

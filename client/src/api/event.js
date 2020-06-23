@@ -2,7 +2,6 @@ import moment from 'moment'
 import axios from 'axios'
 
 //conbining and using the api which backend provide to fulfill function the app need
-//const API_URL= "http://localhost:4000/api"
 
 const baseUrl = process.env.API_URL
 
