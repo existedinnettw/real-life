@@ -15,16 +15,20 @@ class Layout extends Component {
         this.state = {
             layoutStyle: {},
         }
+        this.navItemsName = {
+            'White Board': '/whiteboard/',
+            'Mission': '/mission/',
+        }
     }
     render() {
         return (
             <div style={this.state.layoutStyle}>
-                <NavBar style={{ zIndex: 99 }} />
+                <NavBar style={{ zIndex: 99 }} navItemsName={this.navItemsName} />
                 <Switch>
                     <Route path="/" exact component={WhiteBoard} />
                     <Route path="/whiteBoard" render={(props) => <WhiteBoard {...props} />} />
-                    <Route path="/mission/" render={(props) => <Mission {...props}  />} />
-                    <Route path='/analysis/' component={Analysis} />
+                    <Route path="/mission/" render={(props) => <Mission {...props} />} />
+                    {/* <Route path='/analysis/' component={Analysis} /> */}
                 </Switch>
 
             </div>

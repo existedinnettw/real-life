@@ -4,9 +4,13 @@ import {
     Row, Col, Table, Radio, Divider, InputNumber
 } from 'antd';
 // import Button from 'react-bootstrap/Button'
-
+import {
+    BulbTwoTone
+} from '@ant-design/icons';
 import { Button } from 'antd';
 import 'antd/dist/antd.css'
+
+import Help from 'components/page/help/Help'
 
 import { /*idEventFilter*/ todayEventsFilter, } from "util/filter"
 import { /*fetchEvent,*/ modEvent } from 'state/eventSlice'
@@ -23,6 +27,7 @@ import './whiteBoard.css'
 
 function WBGreet(props) {
     const [now, setNow] = useState(moment())
+    const [showHelp, setShowHelp] = useState(false)
     useEffect(
         () => {
             const intervalId = setInterval(() => {
@@ -39,7 +44,7 @@ function WBGreet(props) {
     if (timeHr < 0) {
         timeHr += 24
     }
-    let timStr = `本日已耍廢 ${timeHr}hr, ${timPst.minute()}min, ${timPst.second()}sec`
+    let timStr = `already veg ${timeHr}hr, ${timPst.minute()}min, ${timPst.second()}sec`
     return (
         <div className="wb-greet">
             <motion.div initial={{ scale: 0 }}
@@ -50,18 +55,43 @@ function WBGreet(props) {
                     damping: 20
                 }}
             >
-                <Row style={{minHeight:'80vh'}} className='wb-greet-mid-box round-border float-box' >
+                <Row
+                    className='wb-greet-mid-box wb-round-border wb-float-box'
+                    align="middle"
+                // justify="space-around"
+                >
                     <Col xs={24}></Col>
-                    <Col xs={24} className='time-str float-box' >I just wanna veg...</Col>
-                    <Col xs={24} className=''>
-                        <img className="veg-img round-border float-box" src={veg_img} />
+                    <Col xs={24}>
+                        <Row align="bottom">
+                            <Col xs={16}
+                                className='wb-text' >
+                                I just want to veg out...
+                                </Col>
+                            <Col xs={8} >
+                                <Button
+                                    style={{ width: '8rem', height: '8rem' }}
+                                    ghost={true}
+                                    icon={<BulbTwoTone
+                                        style={{ fontSize: '4rem' }}
+                                    // className='wb-help-icon'
+                                    />}
+                                    shape="circle" size="large"
+                                    onClick={() => {
+                                        setShowHelp(true)
+                                    }}
+                                />
+                            </Col>
+                        </Row>
                     </Col>
-                    <Col xs={24} className='time-str '>{timStr}</Col>
-                    <Col xs={24} className=''>
+                    <Col xs={24} >
+                        <img className="wb-veg-img wb-round-border wb-float-box" src={veg_img} />
+                    </Col>
+                    <Col xs={24} className='wb-text '>{timStr}</Col>
+                    <Col xs={24} >
                         <Button size='large'
                             type='primary'
                             shape='round'
-                            className='lowerBtn'
+                            className='wb-lower-btn '
                             onClick={props.onClick}>
                             work
                     </Button>
@@ -69,6 +99,9 @@ function WBGreet(props) {
                 </Row>
 
             </motion.div>
+            {
+                showHelp && <Help cancelCB={() => { setShowHelp(false) }} />
+            }
         </div>
     )
 }
@@ -79,18 +112,28 @@ function WBChoice(props) {
     const todayEvents = props.tdEvents
     // let colBP = { xs: Math.floor(24 / 5) }
     const columns = [
-        { title: '[Summary]', dataIndex: 'summary' },
-        { title: '[Target]', dataIndex: 'target' },
-        { title: '[Purpose]', dataIndex: 'purpose' },
-        { title: '[expectTime]', dataIndex: 'expect_time' },
+        { title: '[Summary]', dataIndex: 'summary', },
         {
-            title: '[DueTime]', dataIndex: 'due_time', defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.due_time - b.due_time,
-            render: (text) => <>{moment.unix(text).format("M/D")}</>
+            title: '[Target]', dataIndex: 'target', ellipsis: true
+            /*ellipsis: {showTitle: false,} this not work since I set set onRow */
         },
         {
-            title: '[timeSpent]', dataIndex: 'time_spent',
-            render: (text) => <>{Number((text).toFixed(5))}</>
+            title: '[Purpose]', dataIndex: 'purpose',
+            responsive: ['xxl', 'xl',], ellipsis: { showTitle: false, }
+        },
+        {
+            title: '[expectTime]', dataIndex: 'expect_time',
+            ellipsis: true, responsive: ['xxl', 'xl', 'lg']
+        },
+        {
+            title: '[DueTime]', dataIndex: 'due_time', defaultSortOrder: 'ascend',
+            sorter: (a, b) => a.due_time - b.due_time, ellipsis: true,
+            render: (text) => <>{moment.unix(text).format("M/D")}</>,
+        },
+        {
+            title: '[timeSpent]', dataIndex: 'time_spent', ellipsis: true,
+            render: (text) => <>{Number((text).toFixed(5))}</>,
+            responsive: ['xxl', 'xl', 'lg', 'md']
         }
     ]
     const onSelectCB = (record) => {
@@ -107,43 +150,48 @@ function WBChoice(props) {
         },
     };
     return (
-        <div>
-            <Row className="wb-choice" align="middle">
-                <Col xs={24} className='time-str'>Today work</Col>
-                <Col xs={24} >
-                    <div className="table-box round-border">
-                        <Table
-                            rowKey="id"
-                            rowSelection={{
-                                type: "radio",
-                                ...rowSelection,
-                            }}
-                            onRow={(record) => ({
-                                onClick: () => {
-                                    //console.log('onRow record:',record)
-                                    onSelectCB(record)
-                                },
-                            })}
-                            columns={columns}
-                            dataSource={todayEvents}
-                        />
-                    </div>
+        <div className="wb-choice" >
+            <Col></Col>
+            <Col className='wb-text'
+                style={{ fontSize: '3rem' }}
+            >
+                Today work
                 </Col>
-                <Col xs={24}>
-                    <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
-                        onChange={(value) => props.setExpectWorkTime(value)}
-                    /> min
+            <Col>
+                <div className="wb-table-box wb-float-box wb-round-border">
+                    <Table
+                        rowKey="id"
+                        rowSelection={{
+                            type: "radio",
+                            ...rowSelection,
+                        }}
+                        onRow={(record) => ({
+                            onClick: () => {
+                                //console.log('onRow record:',record)
+                                onSelectCB(record)
+                            },
+                        })}
+                        columns={columns}
+                        dataSource={todayEvents}
+                    />
+                </div>
+            </Col>
+            <Col 
+                className="wb-text">
+                <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
+                    onChange={(value) => props.setExpectWorkTime(value)}
+                /> min
                 </Col>
-                <Col xs={24} className=''>
-                    <Button size='large'
-                        type='primary'
-                        shape='round' className='lowerBtn'
-                        onClick={props.onClick} >
-                        start
+            <Col >
+                <Button size='large'
+                    type='primary'
+                    shape='round' className='wb-lower-btn'
+                    onClick={props.onClick} >
+                    start
                     </Button>
-                </Col>
-            </Row>
-        </div >
+            </Col>
+            <Col></Col>
+        </div>
     )
 }
 
@@ -176,15 +224,21 @@ class WBStart extends Component {
         let missionStr = `To do: ${props.workingEvent.summary}`
         let timeStr = `${Math.ceil(props.expectWorkTime - this.interval.as('minutes'))} min left`
         return (
-            <Row className="wb-start" align="middle">
-                <Col xs={24} className='mission-str'>{missionStr}</Col>
-                <Col xs={24} className='count-time-str'>{timeStr}</Col>
-                <Col xs={24}>
+            <div className="wb-start" >
+                <Col></Col>
+                <Col className='wb-text'>
+                    {missionStr}
+                </Col>
+                <Col className='wb-text'>
+                    {/* may be smaller font latter */}
+                    {timeStr}
+                </Col>
+                <Col>
                     <Button
                         size='large'
                         type='primary'
                         shape='round'
-                        className='lowerBtn'
+                        className='wb-lower-btn'
                         onClick={
                             () => {
                                 props.stopBtnCB()
@@ -193,7 +247,8 @@ class WBStart extends Component {
                         stop
                 </Button>
                 </Col>
-            </Row>
+                <Col></Col>
+            </div>
         )
     }
 }
@@ -249,7 +304,7 @@ class WhiteBoard extends Component {
 
         return (
             <div className='wb-root' >
-                <div className='main-float-box'>
+                <div className='wb-main-float-box'>
 
                     {this.state.workState === 'WB_greet' &&
                         <WBGreet onClick={(e) => this.setState({ workState: 'WB_choice' })} />}

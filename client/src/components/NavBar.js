@@ -24,11 +24,6 @@ function NavBarItem(props) {
 class NavBar extends Component {
     constructor(props) {
         super(props)
-        this.itemsNames = {
-            'White Board': '/whiteboard/',
-            'Mission': '/mission/',
-            'Analysis': '/analysis/',
-        }
         this.state = {
             showNav: false,
         }
@@ -50,43 +45,74 @@ class NavBar extends Component {
             <div >
                 <div className='tp-header'>
                     <div className='nav-btn'
-                        onClick={(e) => { this.setState({ showNav: true }) }}
-                        onMouseOver={() => this.setState({ showNav: true })}
+                        // onClick={(e) => {
+                        //     e.preventDefault()
+                        //     e.stopPropagation()
+                        //     // e.nativeEvent.stopImmediatePropagation()
+                        //     console.log('nav clicked')
+                        //     this.setState({ showNav: true })
+                        // }}
+                        onMouseOver={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            e.nativeEvent.stopImmediatePropagation()
+                            // console.log('nav mouse over')
+                            this.setState({ showNav: true })
+                        }}
+                    // onTouchStart={(e) => {
+                    //     // e.preventDefault()
+                    //     e.nativeEvent.stopImmediatePropagation()
+                    //     console.log('nav touch start')
+                    //     this.setState({ showNav: true })
+                    // }}
+                    // onMouseEnter={(e) => {
+                    //     e.preventDefault()
+                    //     e.nativeEvent.stopImmediatePropagation()
+                    //     console.log('nav mouse enter')
+                    //     this.setState({ showNav: true })
+                    // }}
                     >
                         {/* <FontAwesomeIcon icon={faAlignLeft} /> */}
+
                     </div>
                 </div>
 
+
                 <SideNav showNav={this.state.showNav || !this.props.user.isLogin}
-                    style={{ zIndex: 99, }}
+                    className='side-nav'
+                    //don't know why, solve z-index&touch problem suddenly
                     navStyle={{ backgroundColor: 'rgba(0,0,0,0.5)', width: '20rem' }}
-                    onHideNav={() => this.setState({ showNav: false })}
-                    onMouseOut={() => this.setState({ showNav: false })}
+                    onHideNav={() => {
+                        //onclick or on touch end
+                        // console.log('nav hide nav')
+                        this.setState({ showNav: false })
+                    }}
                 >
                     <div className='nav-btn'
                         style={{ display: 'flex', flexDirection: 'column', width: '20rem', }}
-                        onMouseLeave={() => this.setState({ showNav: false })}
+                        onMouseLeave={(e) => {
+                            e.preventDefault()
+                            // console.log('nav mouse leave')
+                            this.setState({ showNav: false })
+                        }}
                     >
                         <div className='nav-bar-title'>
                             <div>
                                 Real-Life
-                            {
-                                    !this.props.user.isLogin ?
-                                        <Button className='auth-btn'
-                                            ghost={true}
-                                        >
-                                            <a href={`${process.env.BASE_URL}/auth/google`}>
-                                                login
-                                    </a>
-                                        </Button> :
-                                        <Button className='auth-btn'
-                                            ghost={true}
-                                        >
-                                            <a href={`${process.env.BASE_URL}/auth/logout`}>
-                                                logout
-                                </a>
-                                        </Button>
-                                }
+                            {!this.props.user.isLogin ?
+                                    <Button className='auth-btn'
+                                        ghost={true}>
+                                        <a href={`${process.env.BASE_URL}/auth/google`}>
+                                            login</a>
+                                    </Button> :
+                                    <Button className='auth-btn'
+                                        ghost={true}>
+                                        <a href={`${process.env.BASE_URL}/auth/logout`}>
+                                            logout</a>
+                                    </Button>}
+                            </div>
+                            <div className='nav-bar-subtitle'>
+                                A scheduler to prevent from vegging.
                             </div>
                             <div style={{ padding: '1rem 1rem' }}>
                                 {this.props.user.isLogin && <img className='user-img' src={this.props.user.photo} alt="Background" />}
@@ -95,9 +121,10 @@ class NavBar extends Component {
                         </div>
 
                         {
-                            Object.keys(this.itemsNames).map((key, idx) => {
+                            Object.keys(this.props.navItemsName).map((key, idx) => {
                                 return (
-                                    <NavBarItem itemName={key} key={idx} path={this.itemsNames[key]}
+                                    <NavBarItem itemName={key} key={idx}
+                                        path={this.props.navItemsName[key]}
                                     />
                                 )
                             })

@@ -30,28 +30,25 @@
     transition: background-color 500ms;
 }
 
-.title {
+.ms-title {
     font-size: 2rem;
     margin: 1.5rem;
     text-align: center;
 }
 
-.ant-input, .ant-picker-input, .ant-select-selection-search-input {
+.ant-input, .ant-picker-input {
     text-align: left;
 }
 
-.ant-card {
+.ms-ant-card {
     margin: 1rem auto;
     /*hot fix*/
     /* position: static; */
     z-index: 10;
 }
 
-.ant-card-body {
-    padding: .25rem;
-}
 
-.float-box {
+.ms-float-box {
     color: white;
     border-radius: 1rem;
     /* box-shadow: 0 0 1rem grey; */
@@ -62,11 +59,12 @@
     padding: 0 0 1rem 0;
 }
 
+/* this may cause css clash, however react-bootstrap doesn't output style setting */
 .carousel-control-prev, .carousel-control-next {
     width: 5%;
 }
 
-.card, .ant-list-header, .ant-list-item {
+.ms-card{
     margin: 0.5rem 0.3rem;
     padding: 0.3rem 1.5rem;
     border-radius: .3rem;
@@ -75,21 +73,19 @@
     user-select: none;
     /* z-index: 99; */
 }
+.ant-list-header{
+    /*watch out clash*/
+    margin: 0rem 0rem;
+    padding: 0rem 0rem;
+}
 
 /*can't overcome ant-col over card by z-index*/
 
-.card-preview {
+/* .ms-card-preview {
     background-color: rgba(255, 255, 255, 0.5);
-    /* width: 20rem; */
     padding: 0 3rem;
-    /* z-index: 9999; */
-    /* position: relative; */
-    /* z-index: 99; */
-}
+} */
 
-.ant-list-item {
-    background-color: rgba(255, 255, 255, 0.8);
-}
 
 .interactive-icon {
     font-size: 2.5rem;
@@ -112,7 +108,7 @@
     color: white;
 }
 
-.switch-icon {
+/* .switch-icon {
     font-size: 2rem;
     margin: 'auto';
     display: 'block';
@@ -123,9 +119,9 @@
     border-radius: 1rem;
     margin: 1rem 1rem 3rem 1rem;
     height: 4rem;
-}
+} */
 
-.config-p {
+.ms-config-p {
     font-size: 1rem;
     text-align: left;
     margin: .5rem;

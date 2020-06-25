@@ -30,7 +30,7 @@ module.exports = {
     config.resolve.alias = {
       api: path.resolve(__dirname, 'src/api/'),
       util: path.resolve(__dirname, 'src/util/'),
-      component: path.resolve(__dirname, 'src/component/'),
+      components: path.resolve(__dirname, 'src/components/'),
       state: path.resolve(__dirname, 'src/state')
     }
     config = rewireDefinePlugin(config, env, {

@@ -1,17 +1,17 @@
 import React, { Component, useState } from 'react'
 import {
     Row, Col, Divider,
-    Input, DatePicker, Select, Button, Affix, Card, List, Typography, Tooltip, InputNumber
+    Input, DatePicker, Button, Affix, Card, List, Typography, Tooltip, InputNumber
 } from 'antd';
+import {
+    PlusOutlined,
+    CarryOutOutlined, ImportOutlined, ExportOutlined, DeleteOutlined,
+} from '@ant-design/icons';
 import 'antd/dist/antd.css'
 
 import Carousel from 'react-bootstrap/Carousel'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import {
-    PlusOutlined,
-    CarryOutOutlined, ImportOutlined, ExportOutlined, DeleteOutlined,
-} from '@ant-design/icons';
 // import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
 import { purple, grey } from '@ant-design/colors';
 import { Safe_el, rm } from 'util/electronUtil'
@@ -22,11 +22,6 @@ import { connect } from 'react-redux';
 import eventSlice, { fetchEvent, addEvent, modEvent, rmvEvent } from 'state/eventSlice'
 import moment from 'moment'
 
-// import { DndProvider } from "react-dnd";
-// import { HTML5Backend } from 'react-dnd-html5-backend'
-// import { TouchBackend } from 'react-dnd-touch-backend'
-
-// import MultiBackend from 'react-dnd-multi-backend';
 import { DndProvider, usePreview } from 'react-dnd-multi-backend';
 import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 
@@ -36,9 +31,31 @@ import { idEventFilter, todayEventsFilter, unDoneEventsFilter } from "util/filte
 import { CSSTransition } from "react-transition-group";
 
 import './mission.css'
+const styles = {
+    // replace default ant style
+    antCardBody: { backgroundColor: 'rgb(220,220,220)', padding: '0.25rem' },
+    antListItem: {
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        margin: '0.5rem 0.3rem',
+        padding: '0.3rem 1.5rem',
+        borderRadius: '.3rem',
+        color: 'rgb(25, 25, 25)',
+        userSelect: 'none'
+    },
+    antListHeader: {
+        margin: '0rem 0.3rem',
+        padding: '0.3rem 1.5rem',
+        borderRadius: '.3rem',
+        color: 'rgb(25, 25, 25)',
+        userSelect: 'none',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+        fontWeight: 600,
+        color: 'black'
+    }
+}
 
 
-const { Option } = Select
+
 
 class RInputRow extends Component {
     constructor(props) {
@@ -136,30 +153,7 @@ class PWInputRow extends Component {
                 <Col>
                     <Input placeholder="work name" />
                 </Col>
-                <Col>
-                    <Select
-                        showSearch
-                        style={{ width: 80 }}
-                        placeholder="Select work types"
-                        className="inputOption"
-                    >
-                        <Option value="jack">Jack</Option>
-                        <Option value="lucy">Lucy</Option>
-                        <Option value="tom">Tom</Option>
-                    </Select>
-                </Col>
-                <Col>
-                    <Select
-                        showSearch
-                        style={{ width: 80 }}
-                        placeholder="Expected time(min)"
-                        className="inputOption"
-                    >
-                        <Option value="jack">Jack</Option>
-                        <Option value="lucy">Lucy</Option>
-                        <Option value="tom">Tom</Option>
-                    </Select>
-                </Col>
+
                 <Col style={{ marginBottom: 1.5 * remB }} >
                     <Button onClick icon={<PlusOutlined style={{ margin: 'auto', display: 'block' }} />}></Button>
                 </Col>
@@ -184,7 +178,7 @@ function DraggableCard(props) {
     });
     return (
         <div ref={dragRef} //
-            className={`card`}
+            className={`ms-card`}
             style={{
                 opacity: isDragging ? 0.5 : 1,
                 cursor: 'move',
@@ -205,13 +199,14 @@ function ScheCard(props) {
         return (
             <div key={`column-${columnIndex}`}>
                 <DraggableCard {...propsToColumn} />
-                {/* <MyPreview key={`card-preview-${columnIndex}`} /> */}
             </div>
         )
     });
     return (
-        <Card title={titleStr} style={{ opacity: 1, padding: '0.5rem' }}
-            bodyStyle={{ backgroundColor: 'rgb(220,220,220)' }}>
+        <Card
+            className='ms-ant-card'
+            bodyStyle={styles.antCardBody}
+            title={titleStr} style={{ opacity: 1, padding: '0.5rem' }}>
             {columns}
         </Card>
     )
@@ -293,7 +288,7 @@ class CurrentMission extends Component {
         return (
             <div>
                 <Row justify='center'>
-                    <Col className='title'>Mission</Col>
+                    <Col className='ms-title'>Mission</Col>
                 </Row>
                 <Row justify='center' >
                     <Col xs={21} lg={18} xxl={17}>
@@ -378,7 +373,7 @@ class PWork extends Component {
         return (
             <div>
                 <Row justify='center' align="middle">
-                    <Col className='title'>
+                    <Col className='ms-title'>
                         Periodic work
                 </Col>
                 </Row>
@@ -393,7 +388,10 @@ class PWork extends Component {
                 <Divider style={{ backgroundColor: 'rgba(0,0,0,0)' }}></Divider>
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
                     <Col xs={24} md={12}>
-                        <Card title='Daily' style={{ width: '90%' }}>
+                        <Card
+                            bodyStyle={styles.antCardBody}
+                            className='ms-ant-card'
+                            title='Daily' style={{ width: '90%' }}>
                             <List
                                 bordered
                                 dataSource={['item1', 'item2', 'item3']}
@@ -407,7 +405,10 @@ class PWork extends Component {
                         </Card>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Card title='Weekly' style={{ width: '90%' }}>
+                        <Card
+                            className='ms-ant-card'
+                            bodyStyle={styles.antCardBody}
+                            title='Weekly' style={{ width: '90%' }}>
                             <List
                                 bordered
                                 dataSource={['item1', 'item2', 'item3']}
@@ -435,20 +436,20 @@ class MissionConfig extends Component {
         return (
             <div style={{ width: '80%', margin: '0 auto' }}>
                 <Row justify='center'>
-                    <Col className='title'>
+                    <Col className='ms-title'>
                         Config
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24} className='config-p'>
+                    <Col span={24} className='ms-config-p'>
                         每日工時限制：
                         <InputNumber min={1} max={10} defaultValue={3} />
                     </Col>
-                    <Col span={24} className='config-p'>
+                    <Col span={24} className='ms-config-p'>
                         work 項目限制：
                         <InputNumber min={1} max={10} defaultValue={3} />
                     </Col>
-                    <Col span={24} className='config-p'>
+                    <Col span={24} className='ms-config-p'>
                         work 刷新時間(起床時間)：
                         <InputNumber min={1} max={10} defaultValue={3} />
                     </Col>
@@ -472,13 +473,13 @@ function TodayWorkDisp(props) {
                 stiffness: 160,
                 damping: 20
             }}
-            className='float-box today-work-disp'
+            className='ms-float-box today-work-disp'
             style={{
                 background: purple[3],
                 boxShadow: `0 0 1rem ${grey[7]}`,
             }}>
             <Row justify='center' >
-                <Col xs={24} className='title'>
+                <Col xs={24} className='ms-title'>
                     Today work
                 </Col>
                 <Col xs={24} style={{ padding: '0 1.5rem' }}>
@@ -487,10 +488,10 @@ function TodayWorkDisp(props) {
                         dataSource={todayEvents}
                         header={
                             <Row
-                                style={{
-                                    fontWeight: 600,
-                                    color: 'black'
-                                }}
+                                style={
+                                    styles.antListHeader
+                                    // this actually no the real head of ant list header
+                                }
                                 justify='space-around'>
                                 {colTitle.map((item, idx) => {
                                     return (
@@ -502,7 +503,7 @@ function TodayWorkDisp(props) {
                             </Row>
                         }
                         renderItem={item => (
-                            <List.Item >
+                            <List.Item style={styles.antListItem}>
                                 <Row key={item.id}
                                     style={{
                                         width: '100%'
@@ -552,7 +553,7 @@ function EventsDisp(props) {
                 damping: 20
             }}>
             <Carousel interval={null} touch={false}
-                className='float-box' style={carouselStyle} >
+                className='ms-float-box' style={carouselStyle} >
 
                 <Carousel.Item>
                     {/* <DndProvider backend={TouchBackend} > */}
@@ -627,7 +628,7 @@ class Mission extends Component {
             <div className={'ms-root'} >
                 <CSSTransition in={this.state.inProp} timeout={1000}
                     classNames="bg-fade-mask" unmountOnExit>
-                        {/* remember className"s" is special for css group */}
+                    {/* remember className"s" is special for css group */}
                     <div style={{ padding: '2rem 1rem' }}>
                         <Row justify='center' >
                             <Col {...rwdColBP}>

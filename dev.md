@@ -564,7 +564,30 @@ react-router-dom 應該要有state，之類的，這樣我才能在router 間插
 
 
 
+---
+
 cra 同css name 會conflict
 
 [            Class Conflicts          ](https://dev.to/letsbsocial1/class-conflicts-1cg)
 
+查了一下cra2 好像不會了，但是我重裝結果一樣。可能是我用了rewired?
+
+有，只是要檔名要特別命名
+
+[Adding a CSS Modules Stylesheet](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet)
+
+[Using CSS Modules in React](https://programmingwithmosh.com/react/css-modules-react/)
+
+這還有介紹其它方法
+
+用官方的實在太麻煩了，如果要multiclass 要多打一堆符號
+
+有第三方的，基本是HOC
+
+[react css modules](https://github.com/gajus/react-css-modules)
+
+我的結論是，用BEM name convention 才是最好的，原生Performance，知道是什麼的css，不會conflict...
+
+---
+
+如果要能夠計算today veg time，就必需在user db 多加entry

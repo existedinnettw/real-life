@@ -4,6 +4,7 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
 /* body {
     background-color: lightblue;
 } */
+@import url('https://fonts.googleapis.com/css2?family=MuseoModerno:wght@600&display=swap');
 
 .wb-root {
     text-align: center;
@@ -17,15 +18,40 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
     height: auto;
 }
 
-.main-float-box {
+.wb-main-float-box {
     min-height: 100vh;
     height: auto;
-    width: 70%;
+    width: 80%;
     max-width: 1000px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.493);
     box-shadow: 0 0 3rem rgb(34, 34, 34);
     border: 1rem;
     margin: auto;
+}
+
+.wb-round-border {
+    border-style: none;
+    border-radius: 1rem;
+    border-color: lightgray;
+}
+
+.wb-float-box {
+    box-shadow: 0 0 3rem rgba(34, 34, 34, 0.952);
+}
+.wb-lower-btn {
+    width: auto;
+    /* padding: .5rem 2rem; */
+    margin: .5rem 0 .5rem 0;
+    border:none;
+    background-color: rgba(46, 185, 190, 0.9);
+    box-shadow: 0 0 2rem rgba(122, 122, 122, 0.95);
+}
+.wb-text {
+    color: rgb(255, 255, 255);
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'MuseoModerno', cursive;
+    text-shadow: 2px 2px #558ABB;
 }
 
 .wb-greet {
@@ -42,82 +68,69 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
     min-height: 80vh;
     width: 80%;
     margin: auto;
-    /* background-color: aliceblue; */
+    background-color: rgba(60, 133, 182, 0.445);
 }
+/* .wb-help-icon{
+    font-size: 10rem;
+} */
+
+
 
 .wb-choice {
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 100vh;
+    height: auto;
 }
 
 .wb-start {
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 100vh;
+    height: auto;
 }
 
-.mission-str {
-    font-size: 1.5rem;
-}
-
-.time-str {
-    margin: 1.5rem 0 1rem 0;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color:black
-}
-
-.count-time-str {
+.wb-count-time-str {
     font-size: 1rem;
     font-weight: 500;
 }
 
-.veg-img {
+.wb-veg-img {
     max-width: 60%;
     height: auto;
     margin: .5rem 0 1.5rem 0;
     opacity: 0.9;
 }
-.round-border{
-    border-style: none;
-    border-radius: 1rem;
-    border-color: lightgray;
-}
-.float-box{
-    box-shadow: 0 0 3rem rgb(34, 34, 34);
-}
 
-.lowerBtn {
-    width: auto;
-    /* padding: .5rem 2rem; */
-    margin: .5rem 0 2rem 0;
-}
+
 
 /**************/
 
-.minuteSelect {
+.wb-minute-select {
     /*font-size: 2rem;*/
     display: inline;
     text-align-last: center;
 }
 
-.selectOpt {
+.wb-select-opt {
     text-align: center;
     text-align-last: center;
 }
 
-.remindText {
+.wb-remind-text {
     font-size: 1.5rem;
 }
 
-.table-box {
-    border-style: solid;
+.wb-table-box {
+    /* border-style: solid; */
     padding: 1rem;
     background-color: rgba(255, 255, 255, 0.904);
-    width: 75%;
+    max-width: 80%;
+    width: auto;
     margin: 0 auto;
     font-size: 1.5rem;
-}
-
-.workOption {
-    text-align: left;
 }
 
 /* .compContainer{
