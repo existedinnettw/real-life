@@ -11,15 +11,16 @@ function list( email ){
     SELECT * FROM users
     WHERE email = $1
     `
-    return db.one(sql, [email])
+    return db.oneOrNone(sql, [email])
 }
 
 function create(email){
     const sql=`
-    INSERT INTO users ($<this:name>)
+    INSERT INTO users (email)
     VALUES ($<email>)
-    RETURING *
+    RETURNING *
     `
+    // console.log('sql:',sql)
     return db.one(sql, {email} )
 }
 

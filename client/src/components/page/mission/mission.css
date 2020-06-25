@@ -1,5 +1,6 @@
 .ms-root {
-    background-image: linear-gradient( rgba(213, 184, 255, 0.5), rgba(0, 0, 0, 0.5)), url(./background.jpg);
+    background-image: linear-gradient( rgba(213, 184, 255, 0.5), rgba(0, 0, 0, 0.5)),
+    url(./background.jpg);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
@@ -7,13 +8,17 @@
     min-height: 100vh;
 }
 
+
+.bg-fade-mask {
+    background-color: rgba(0, 0, 0, 0);
+}
 .bg-fade-mask-enter {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 .bg-fade-mask-enter-active {
-    background-color: rgba(255, 255, 255, 0);
-    transition: background-color 500ms;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 600ms ease-out;
 }
 
 .bg-fade-mask-exit {
@@ -37,10 +42,24 @@
 
 .ant-card {
     margin: 1rem auto;
+    /*hot fix*/
+    /* position: static; */
+    z-index: 10;
 }
 
 .ant-card-body {
     padding: .25rem;
+}
+
+.float-box {
+    color: white;
+    border-radius: 1rem;
+    /* box-shadow: 0 0 1rem grey; */
+    opacity: 0.96;
+}
+.today-work-disp{
+    margin: 1.5rem 1rem 2rem 1rem;
+    padding: 0 0 1rem 0;
 }
 
 .carousel-control-prev, .carousel-control-next {
@@ -53,6 +72,19 @@
     border-radius: .3rem;
     color: rgb(25, 25, 25);
     background-color: rgba(255, 255, 255, 0.99);
+    user-select: none;
+    /* z-index: 99; */
+}
+
+/*can't overcome ant-col over card by z-index*/
+
+.card-preview {
+    background-color: rgba(255, 255, 255, 0.5);
+    /* width: 20rem; */
+    padding: 0 3rem;
+    /* z-index: 9999; */
+    /* position: relative; */
+    /* z-index: 99; */
 }
 
 .ant-list-item {

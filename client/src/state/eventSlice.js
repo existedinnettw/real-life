@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { listEvents, createEvent, delEvent, updateEvent } from "api/event"
 import {ascDueTEventsSort} from "util/filter"
-import _ from 'lodash'
+// import _ from 'lodash'
 
 // event STATE
 const eventState = {
@@ -116,6 +116,6 @@ const eventSlice = createSlice({
 });
 
 //if component need action, just import slice and do someing like this.
-const { startLoading, endLoading } = eventSlice.actions;
+// const { startLoading, endLoading } = eventSlice.actions;
 
 export default eventSlice

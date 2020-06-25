@@ -1,35 +1,70 @@
-
-.tp-header{
+.tp-header {
     position: fixed;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     text-align: left;
-    z-index: 9999;
+    z-index: 98;
 }
-.nav-btn{
-    width: 1.5rem;
+
+/*mobile*/
+.nav-btn {
+    min-width: 1.5rem;
+    width: 6vw;
     height: 100vh;
     padding: 0;
-    background:rgba(236, 236, 236, 0);
+    background: rgba(255, 255, 255, 0);
     border: .3rem;
     cursor: pointer;
 }
+/* @media screen and (min-width: 768px) {
+} */
+@media screen and (min-width: 1200px) {
+    .nav-btn {
+        width: 1.5rem;
+    }
+}
 
-.nav-bar-title{
+
+
+
+.auth-btn {
+    margin-left: 2rem;
+    /* padding-bottom: .5rem;
+    border: solid;
+    border-radius: .5rem; */
+    /* opacity: 0.8; */
+}
+
+.user-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: large;
+    padding-left: 1rem;
+    display: inline;
+}
+
+.user-img {
+    width: 3rem;
+    height: 3rem;
+}
+
+.nav-bar-title {
     color: white;
     padding: 1rem;
-    font-size: 2rem;
+    margin: 1rem, 0;
+    font-size: 2.5rem;
 }
 
 .nav-bar-item {
     font-size: large;
     font-weight: 500;
     background-color: rgba(141, 141, 141, 0.5);
-    color: rgba(255,255,255, 0.8);
+    color: rgba(255, 255, 255, 0.8);
     padding: 0.5rem 0.8rem;
     margin: .6rem .6rem;
 }
+
 .nav-bar-item:hover {
-    color: rgba(255,255,255, 1);
+    color: rgba(255, 255, 255, 1);
     font-weight: 600;
 }

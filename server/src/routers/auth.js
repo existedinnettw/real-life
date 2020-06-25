@@ -1,6 +1,8 @@
 const express = require('express')
 const passport = require('passport')
 const {callbackURL} = require('../../config')
+const eventsModel = require('../model/events')
+const usersModel = require('../model/users')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 passport.use(new GoogleStrategy(
@@ -41,6 +43,26 @@ authRouter.get('/logout', isAuthenticated, function(req,res){
     req.logOut()
     console.log('log out')
     res.redirect('/')
+})
+authRouter.get('/islogin', isAuthenticated, function(req,res){
+    // console.log('already login')
+    const email=req.user.emails[0].value
+    usersModel.list(email).then(rst=>{
+        if(!rst){
+            //not yet create user
+            console.log('not yet create user with email: ', email)
+            usersModel.create(email).then(rst=>{
+                const userID=rst.id
+                eventsModel.creatDefaultEvents(userID)
+            })
+        }
+    })
+    // console.log(req.user)
+    res.json({
+        isLogin: true,
+        userName: req.user.displayName,
+        photo:req.user.photos[0].value
+    })
 })
 
 function isAuthenticated(req, res, next) {

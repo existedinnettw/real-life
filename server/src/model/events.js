@@ -29,14 +29,14 @@ function create(summary, init_time, due_time, target, purpose, expect_time, user
 }
 function update(id, users_id, payload) {
     //payload is object contain new event info (without id)
-    let newValues=[]
-    keys=Object.keys(payload)
+    let newValues = []
+    keys = Object.keys(payload)
     let i
-    for(i=0; i<keys.length; i++){
-        newValues.push(`${keys[i]} = $${i+1}`)
+    for (i = 0; i < keys.length; i++) {
+        newValues.push(`${keys[i]} = $${i + 1}`)
     }
-    values=Object.values(payload)
-    let conditions = [`id = $${i+1}`, `users_id = $${i+2}`]
+    values = Object.values(payload)
+    let conditions = [`id = $${i + 1}`, `users_id = $${i + 2}`]
     const sql = `
     UPDATE events 
     SET ${newValues.join(', ')}
@@ -57,9 +57,20 @@ function deleteSQL(id, users_id) {
     `
     return db.many(sql, { id, users_id })
 }
+function creatDefaultEvents(users_id) {
+    const sql = `
+    INSERT INTO events (summary, init_time, due_time, target, expect_time, is_today_event, users_id)
+    VALUES 
+    ('example events ^_^', round(extract(epoch from now())), round(extract(epoch from now())), 'full function and done', NULL, FALSE, $<users_id>),
+    ('example events 0_0', 1593475200, round(extract(epoch from now()))+86400*8, 'finish', 2, TRUE, $<users_id>),
+    ('example events 0o0', round(extract(epoch from now())), round(extract(epoch from now()))+86400, 'full function and done', NULL, TRUE, $<users_id>)
+    RETURNING *
+    `
+    return db.many(sql, {users_id})
+}
 
 module.exports = {
-    list, update, create, deleteSQL
+    list, update, create, deleteSQL, creatDefaultEvents
 }
 
 

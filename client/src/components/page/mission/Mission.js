@@ -21,8 +21,15 @@ import { motion } from "framer-motion"
 import { connect } from 'react-redux';
 import eventSlice, { fetchEvent, addEvent, modEvent, rmvEvent } from 'state/eventSlice'
 import moment from 'moment'
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from 'react-dnd-html5-backend'
+
+// import { DndProvider } from "react-dnd";
+// import { HTML5Backend } from 'react-dnd-html5-backend'
+// import { TouchBackend } from 'react-dnd-touch-backend'
+
+// import MultiBackend from 'react-dnd-multi-backend';
+import { DndProvider, usePreview } from 'react-dnd-multi-backend';
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
+
 import { ItemTypes } from 'util/constant'
 import { useDrag, useDrop } from "react-dnd";
 import { idEventFilter, todayEventsFilter, unDoneEventsFilter } from "util/filter"
@@ -161,6 +168,13 @@ class PWInputRow extends Component {
     }
 }
 
+const MyPreview = () => {
+    const { display, itemType, item, style } = usePreview();
+    if (!display) {
+        return null;
+    }
+    return <div className="item-list__item ant-list-item" style={style}>{itemType}</div>;
+};
 function DraggableCard(props) {
     const [{ isDragging }, dragRef] = useDrag({
         item: { type: ItemTypes.CARD, ...props },
@@ -177,19 +191,27 @@ function DraggableCard(props) {
             }}
         >
             {props.event.summary}
+            <MyPreview />
         </div>
     );
 };
+
 
 function ScheCard(props) {
     let { titleStr, dataArr } = props
     //render schedule card
     const columns = dataArr.map((event, columnIndex) => {
         const propsToColumn = { event };
-        return (<DraggableCard key={`column ${columnIndex}`} {...propsToColumn} />)
+        return (
+            <div key={`column-${columnIndex}`}>
+                <DraggableCard {...propsToColumn} />
+                {/* <MyPreview key={`card-preview-${columnIndex}`} /> */}
+            </div>
+        )
     });
     return (
-        <Card title={titleStr} style={{ opacity: 1, padding: '0.5rem' }} bodyStyle={{ backgroundColor: 'rgb(220,220,220)' }}>
+        <Card title={titleStr} style={{ opacity: 1, padding: '0.5rem' }}
+            bodyStyle={{ backgroundColor: 'rgb(220,220,220)' }}>
             {columns}
         </Card>
     )
@@ -282,16 +304,16 @@ class CurrentMission extends Component {
                 <div style={{ padding: '.3rem' }}></div>
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
                     <Col xs={24} sm={12} lg={6}>
-                        < ScheCard titleStr='outdated' dataArr={this.eventsFilter('outdated')} />
+                        < ScheCard key={0} titleStr='outdated' dataArr={this.eventsFilter('outdated')} />
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
-                        < ScheCard titleStr='one week' dataArr={this.eventsFilter('oneWeek')} />
+                        < ScheCard key={1} titleStr='one week' dataArr={this.eventsFilter('oneWeek')} />
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
-                        < ScheCard titleStr='one month' dataArr={this.eventsFilter('oneMonth')} />
+                        < ScheCard key={2} titleStr='one month' dataArr={this.eventsFilter('oneMonth')} />
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
-                        < ScheCard titleStr='6 month' dataArr={this.eventsFilter('6Month')} />
+                        < ScheCard key={3} titleStr='6 month' dataArr={this.eventsFilter('6Month')} />
                     </Col>
                 </Row>
                 <Affix offsetBottom={0}>
@@ -450,11 +472,10 @@ function TodayWorkDisp(props) {
                 stiffness: 160,
                 damping: 20
             }}
+            className='float-box today-work-disp'
             style={{
-                background: purple[3], color: 'white',
-                borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.98',
-                margin: '1.5rem 1rem 2rem 1rem',
-                padding: '0 0 1rem 0',
+                background: purple[3],
+                boxShadow: `0 0 1rem ${grey[7]}`,
             }}>
             <Row justify='center' >
                 <Col xs={24} className='title'>
@@ -519,10 +540,8 @@ TodayWorkDisp = connect(state => ({
 function EventsDisp(props) {
     let carouselStyle = {
         background: `${purple[3]}`,
-        overflow: 'hidden',
-        color: 'white',
-        minHeight: '40vh',
-        borderRadius: '1rem', boxShadow: `0 0 1rem ${grey[7]}`, opacity: '0.96 ',
+        boxShadow: `0 0 1rem ${grey[7]}`,
+        minHeight: '40vh',//may del later
     }
     return (
         <motion.div initial={{ scale: 0 }}
@@ -532,10 +551,13 @@ function EventsDisp(props) {
                 stiffness: 260,
                 damping: 20
             }}>
-            <Carousel interval={null} style={carouselStyle}>
+            <Carousel interval={null} touch={false}
+                className='float-box' style={carouselStyle} >
 
                 <Carousel.Item>
-                    <DndProvider backend={HTML5Backend}>
+                    {/* <DndProvider backend={TouchBackend} > */}
+                    <DndProvider options={HTML5toTouch}>
+                        {/* <DndProvider backend={MultiBackend} options={HTML5toTouch}> */}
                         <CurrentMission />
                         {/* <Carousel.Caption>
                     <h3>First slide label</h3>
@@ -579,6 +601,7 @@ function EventsDisp(props) {
 //         }
 //     };
 // }
+
 class Mission extends Component {
     constructor(props) {
         super(props)
@@ -602,7 +625,9 @@ class Mission extends Component {
         const rwdColBP = { xs: 23, lg: 21, xl: 20, xxl: 16 }
         return (
             <div className={'ms-root'} >
-                <CSSTransition in={this.state.inProp} timeout={1000} classNames="bg-fade-mask" unmountOnExit>
+                <CSSTransition in={this.state.inProp} timeout={1000}
+                    classNames="bg-fade-mask" unmountOnExit>
+                        {/* remember className"s" is special for css group */}
                     <div style={{ padding: '2rem 1rem' }}>
                         <Row justify='center' >
                             <Col {...rwdColBP}>
@@ -614,12 +639,6 @@ class Mission extends Component {
                                 <EventsDisp />
                             </Col>
                         </Row>
-                        <Button>
-                            {/* these place have to remove later */}
-                            <a href={`${process.env.BASE_URL}/auth/google`}>
-                                Click here to login
-                    </a>
-                        </Button>
 
                         <Row style={{ width: '80%', margin: '0 auto', maxWidth: '1300px' }}>
                             {/* <Col >

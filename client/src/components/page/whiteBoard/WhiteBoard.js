@@ -8,15 +8,17 @@ import {
 import { Button } from 'antd';
 import 'antd/dist/antd.css'
 
-import { idEventFilter, todayEventsFilter, } from "util/filter"
-import { fetchEvent, modEvent } from 'state/eventSlice'
-import veg_img from './veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
+import { /*idEventFilter*/ todayEventsFilter, } from "util/filter"
+import { /*fetchEvent,*/ modEvent } from 'state/eventSlice'
+// import { checkLogin } from 'state/userSlice'
+
 // import _ from 'lodash'
 import { Safe_el } from 'util/electronUtil'
 import moment from 'moment'
 import { connect } from 'react-redux';
-//import {remB} from 'util/constant'
+import { motion } from "framer-motion"
 
+import veg_img from './comp-veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
 import './whiteBoard.css'
 
 function WBGreet(props) {
@@ -39,19 +41,34 @@ function WBGreet(props) {
     }
     let timStr = `本日已耍廢 ${timeHr}hr, ${timPst.minute()}min, ${timPst.second()}sec`
     return (
-        <div>
-            <Row className="wb-greet" align="middle">
-                <Col xs={24}></Col>
-                <Col xs={24} className='time-str ' >I just wanna veg...</Col>
-                <Col xs={24} className=''>
-                    <img className="vegImg img-thumbnail img-fluid" src={veg_img} />
-                </Col>
-                <Col xs={24} className='time-str '>{timStr}</Col>
-                <Col xs={24} className=''>
-                    <Button className='lowerBtn' onClick={props.onClick}>work</Button>
-                </Col>
-            </Row>
+        <div className="wb-greet">
+            <motion.div initial={{ scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20
+                }}
+            >
+                <Row style={{minHeight:'80vh'}} className='wb-greet-mid-box round-border float-box' >
+                    <Col xs={24}></Col>
+                    <Col xs={24} className='time-str float-box' >I just wanna veg...</Col>
+                    <Col xs={24} className=''>
+                        <img className="veg-img round-border float-box" src={veg_img} />
+                    </Col>
+                    <Col xs={24} className='time-str '>{timStr}</Col>
+                    <Col xs={24} className=''>
+                        <Button size='large'
+                            type='primary'
+                            shape='round'
+                            className='lowerBtn'
+                            onClick={props.onClick}>
+                            work
+                    </Button>
+                    </Col>
+                </Row>
 
+            </motion.div>
         </div>
     )
 }
@@ -94,7 +111,7 @@ function WBChoice(props) {
             <Row className="wb-choice" align="middle">
                 <Col xs={24} className='time-str'>Today work</Col>
                 <Col xs={24} >
-                    <div className="tabsBox ">
+                    <div className="table-box round-border">
                         <Table
                             rowKey="id"
                             rowSelection={{
@@ -115,10 +132,15 @@ function WBChoice(props) {
                 <Col xs={24}>
                     <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
                         onChange={(value) => props.setExpectWorkTime(value)}
-                    />
+                    /> min
                 </Col>
                 <Col xs={24} className=''>
-                    <Button className='lowerBtn' onClick={props.onClick} >start</Button>
+                    <Button size='large'
+                        type='primary'
+                        shape='round' className='lowerBtn'
+                        onClick={props.onClick} >
+                        start
+                    </Button>
                 </Col>
             </Row>
         </div >
@@ -131,18 +153,18 @@ class WBStart extends Component {
         this.state = {
             now: moment()
         }
-        this.interval=moment.duration(this.state.now.diff(this.props.startTime))
+        this.interval = moment.duration(this.state.now.diff(this.props.startTime))
 
     }
     componentDidMount() {
         this.intervalId = setInterval(() => {
             this.setState({ now: moment() })
-            this.interval=moment.duration(this.state.now.diff(this.props.startTime))
+            this.interval = moment.duration(this.state.now.diff(this.props.startTime))
         }, 1000)
     }
     componentWillUnmount() {
         clearInterval(this.intervalId)
-        const interval=this.interval
+        const interval = this.interval
         // console.log('wb_start unmount', interval.as('seconds'), interval.as('minutes'), interval.as('hours'))
         //this place is why I use class component
         this.props.unMountCB(this.props.workingEvent, interval.as('hours'))
@@ -159,6 +181,10 @@ class WBStart extends Component {
                 <Col xs={24} className='count-time-str'>{timeStr}</Col>
                 <Col xs={24}>
                     <Button
+                        size='large'
+                        type='primary'
+                        shape='round'
+                        className='lowerBtn'
                         onClick={
                             () => {
                                 props.stopBtnCB()
@@ -192,6 +218,7 @@ class WhiteBoard extends Component {
         })
 
     }
+
     componentWillUnmount() {
         this.rollBackNormalWin()
     }
@@ -221,46 +248,50 @@ class WhiteBoard extends Component {
         }
 
         return (
-            <div className='whiteboard' >
-                {this.state.workState === 'WB_greet' &&
-                    <WBGreet onClick={(e) => this.setState({ workState: 'WB_choice' })} />}
-                {this.state.workState === 'WB_choice' &&
-                    <WBChoice onClick={(e) => this.startBtnClick()}
-                        tdEvents={todayEventsFilter(this.props.events)}
-                        expectWorkTime={this.state.expectWorkTime}
-                        setExpectWorkTime={(expectWorkTime) => {
-                            this.setState({ expectWorkTime })
-                            //console.log(expectWorkTime)
-                        }}
-                        setWorkingEvent={(workingEvent) => {
-                            this.setState({ workingEvent })
-                            //console.log(workingEvent)
-                        }}
-                    />}
-                {this.state.workState === 'WB_start' &&
-                    <WBStart expectWorkTime={this.state.expectWorkTime} startTime={this.startTime}
-                        workingEvent={this.state.workingEvent}
-                        stopBtnCB={() => {
-                            this.setState({ workState: 'WB_greet' })
-                        }}
-                        unMountCB={(event, timeSpent) => {
-                            let newEvent = { ...event }
-                            newEvent.time_spent += timeSpent
-                            this.props.dispatch(modEvent(newEvent))
-                        }}
-                    />
-                }
-                <Button
+            <div className='wb-root' >
+                <div className='main-float-box'>
+
+                    {this.state.workState === 'WB_greet' &&
+                        <WBGreet onClick={(e) => this.setState({ workState: 'WB_choice' })} />}
+                    {this.state.workState === 'WB_choice' &&
+                        <WBChoice onClick={(e) => this.startBtnClick()}
+                            tdEvents={todayEventsFilter(this.props.events)}
+                            expectWorkTime={this.state.expectWorkTime}
+                            setExpectWorkTime={(expectWorkTime) => {
+                                this.setState({ expectWorkTime })
+                                //console.log(expectWorkTime)
+                            }}
+                            setWorkingEvent={(workingEvent) => {
+                                this.setState({ workingEvent })
+                                //console.log(workingEvent)
+                            }}
+                        />}
+                    {this.state.workState === 'WB_start' &&
+                        <WBStart expectWorkTime={this.state.expectWorkTime} startTime={this.startTime}
+                            workingEvent={this.state.workingEvent}
+                            stopBtnCB={() => {
+                                this.setState({ workState: 'WB_greet' })
+                            }}
+                            unMountCB={(event, timeSpent) => {
+                                let newEvent = { ...event }
+                                newEvent.time_spent += timeSpent
+                                this.props.dispatch(modEvent(newEvent))
+                            }}
+                        />
+                    }
+                    {/* <Button
                     onClick={() => {
                         this.props.dispatch(fetchEvent())
                     }}>
                     load data
-                </Button>
+                </Button> */}
+                </div>
             </div>
         )
     }
 }
 WhiteBoard = connect(state => ({
+    // ...state,
     ...state.event
 }))(WhiteBoard)
 

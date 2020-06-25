@@ -541,3 +541,30 @@ may do:
 
 
 temp Stop for eng presentation
+
+6/24
+
+dnd 的mose dnd，mobile沒有。要用toch backend
+
+React DnD Multi Backend (有整合React DnD Preview)
+
+touch backend 沒html5 ，無法preview。要加preview
+
+---
+
+mobile 動畫 Mission 的pop up很卡。loading WB size 很大的 background 也卡
+
+react dnd on mobile can drag
+
+dragging 或 往下移page的動作常讓 carousel 翻頁。這讓人不禁覺得 拖曳翻頁只適何純display，有一點點的操作 e.g.input 就不適合。
+
+目前應該會改成純用button，我的原意是希望盡量壓縮空間。 或許要思考這樣壓縮有沒有意義，因為大可直接往下scroll。
+
+react-router-dom 應該要有state，之類的，這樣我才能在router 間插入動畫。跳轉(unmount)前先去一個call back
+
+
+
+cra 同css name 會conflict
+
+[            Class Conflicts          ](https://dev.to/letsbsocial1/class-conflicts-1cg)
+

@@ -1,78 +1,124 @@
 /* css effect area corrupt
 https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-body-css-tag */
+
 /* body {
     background-color: lightblue;
 } */
 
-.whiteboard{
+.wb-root {
     text-align: center;
+    background-image: linear-gradient( rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5)), url(./rz-comp-blue-close-up-colors-cracks-866351.jpg);
+    /* background-image: linear-gradient( rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5)),
+    url(./network-4348658_1280.jpg); */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    height: auto;
 }
-.wb-greet{
-    height: 100vh;
+
+.main-float-box {
+    min-height: 100vh;
+    height: auto;
+    width: 70%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 3rem rgb(34, 34, 34);
+    border: 1rem;
+    margin: auto;
 }
-.wb-choice{
-    height: 100vh;
+
+.wb-greet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: auto;
+    /* position: absolute; left: 0; top: 0; right: 0; bottom: 0; */
+    margin: auto;
 }
-.wb-start{
+
+.wb-greet-mid-box {
+    min-height: 80vh;
+    width: 80%;
+    margin: auto;
+    /* background-color: aliceblue; */
+}
+
+.wb-choice {
     height: 100vh;
 }
 
+.wb-start {
+    height: 100vh;
+}
 
-.mission-str{
+.mission-str {
     font-size: 1.5rem;
 }
 
-.time-str{
+.time-str {
     margin: 1.5rem 0 1rem 0;
     font-size: 1.5rem;
     font-weight: 500;
+    color:black
 }
 
-.count-time-str{
+.count-time-str {
     font-size: 1rem;
     font-weight: 500;
 }
 
-.vegImg{
+.veg-img {
     max-width: 60%;
     height: auto;
     margin: .5rem 0 1.5rem 0;
+    opacity: 0.9;
+}
+.round-border{
+    border-style: none;
+    border-radius: 1rem;
+    border-color: lightgray;
+}
+.float-box{
+    box-shadow: 0 0 3rem rgb(34, 34, 34);
 }
 
-.lowerBtn{
-    width: 20%;
+.lowerBtn {
+    width: auto;
+    /* padding: .5rem 2rem; */
     margin: .5rem 0 2rem 0;
 }
 
-
 /**************/
-.minuteSelect{
+
+.minuteSelect {
     /*font-size: 2rem;*/
     display: inline;
     text-align-last: center;
 }
-.selectOpt{
+
+.selectOpt {
     text-align: center;
     text-align-last: center;
 }
-.remindText{
-    font-size: 1.5rem;    
+
+.remindText {
+    font-size: 1.5rem;
 }
-.tabsBox{
+
+.table-box {
     border-style: solid;
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: lightgray;
     padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.904);
     width: 75%;
     margin: 0 auto;
     font-size: 1.5rem;
 }
-.workOption{
+
+.workOption {
     text-align: left;
 }
-
-
 
 /* .compContainer{
     position: sticky;
