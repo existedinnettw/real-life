@@ -45,13 +45,13 @@ class NavBar extends Component {
             <div >
                 <div className='tp-header'>
                     <div className='nav-btn'
-                        // onClick={(e) => {
-                        //     e.preventDefault()
-                        //     e.stopPropagation()
-                        //     // e.nativeEvent.stopImmediatePropagation()
-                        //     console.log('nav clicked')
-                        //     this.setState({ showNav: true })
-                        // }}
+                        onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            // e.nativeEvent.stopImmediatePropagation()
+                            // console.log('nav clicked')
+                            this.setState({ showNav: true })
+                        }}
                         onMouseOver={(e) => {
                             e.preventDefault()
                             e.stopPropagation()

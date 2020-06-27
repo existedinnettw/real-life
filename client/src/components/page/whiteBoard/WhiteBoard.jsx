@@ -22,7 +22,7 @@ import moment from 'moment'
 import { connect } from 'react-redux';
 import { motion } from "framer-motion"
 
-import veg_img from './comp-veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
+import veg_img from './img/comp-veg.gif' //https://create-react-app.dev/docs/adding-images-fonts-and-files/
 import './whiteBoard.css'
 
 function WBGreet(props) {
@@ -69,10 +69,15 @@ function WBGreet(props) {
                                 </Col>
                             <Col xs={8} >
                                 <Button
-                                    style={{ width: '8rem', height: '8rem' }}
+                                    style={{
+                                        width: '5rem', height: '5rem',
+                                        border:'none',
+                                    }}
                                     ghost={true}
                                     icon={<BulbTwoTone
-                                        style={{ fontSize: '4rem' }}
+                                        style={{
+                                            fontSize: '4rem',
+                                        }}
                                     // className='wb-help-icon'
                                     />}
                                     shape="circle" size="large"
@@ -92,6 +97,7 @@ function WBGreet(props) {
                             type='primary'
                             shape='round'
                             className='wb-lower-btn '
+                            // style={{fontSize:'1rem'}}
                             onClick={props.onClick}>
                             work
                     </Button>
@@ -108,7 +114,13 @@ function WBGreet(props) {
 
 
 function WBChoice(props) {
-    const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState([props.tdEvents[0].id])
+    const [workingEvent, setWorkingEvent] = useState(props.tdEvents[0])
+    useEffect(() => {
+        return () => {
+            props.setWorkingEvent(workingEvent)
+        }
+    }, [workingEvent])
     const todayEvents = props.tdEvents
     // let colBP = { xs: Math.floor(24 / 5) }
     const columns = [
@@ -139,7 +151,7 @@ function WBChoice(props) {
     const onSelectCB = (record) => {
         // console.log('select cb:',record)
         setSelectedRowKeys([record.id])
-        props.setWorkingEvent(record)
+        setWorkingEvent(record)
     }
     const rowSelection = {
         selectedRowKeys: selectedRowKeys,
@@ -176,7 +188,7 @@ function WBChoice(props) {
                     />
                 </div>
             </Col>
-            <Col 
+            <Col
                 className="wb-text">
                 <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
                     onChange={(value) => props.setExpectWorkTime(value)}
@@ -258,7 +270,7 @@ class WhiteBoard extends Component {
         super(props)
         this.state = {
             workState: 'WB_greet', //'WB_choice'
-            workingEvent: null,
+            workingEvent: '',
             expectWorkTime: 60, //defautl value
         }
         this.startTime = moment()
@@ -276,10 +288,6 @@ class WhiteBoard extends Component {
 
     componentWillUnmount() {
         this.rollBackNormalWin()
-    }
-    startBtnClick() {
-        this.setState({ workState: 'WB_start' })
-        this.startTime = moment()
     }
     rollBackNormalWin() {
         Safe_el.check(() => {
@@ -309,7 +317,10 @@ class WhiteBoard extends Component {
                     {this.state.workState === 'WB_greet' &&
                         <WBGreet onClick={(e) => this.setState({ workState: 'WB_choice' })} />}
                     {this.state.workState === 'WB_choice' &&
-                        <WBChoice onClick={(e) => this.startBtnClick()}
+                        <WBChoice onClick={(e) => {
+                            this.setState({ workState: 'WB_start' })
+                            this.startTime = moment()
+                        }}
                             tdEvents={todayEventsFilter(this.props.events)}
                             expectWorkTime={this.state.expectWorkTime}
                             setExpectWorkTime={(expectWorkTime) => {

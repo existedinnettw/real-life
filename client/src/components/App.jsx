@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
-import NavBar from './NavBar'
+import NavBar from './navBar/NavBar'
 import WhiteBoard from './page/whiteBoard/WhiteBoard'
 import Mission from './page/mission/Mission'
-import Analysis from './page/analysis/Analysis'
+// import Analysis from './page/analysis/Analysis'
 import './app.css'
 
 

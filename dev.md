@@ -228,10 +228,11 @@ template of events
 3. **due_corn**
 4. **summary**
 5. **target**
-6. **expect_time**
-7. purpose
+6. **purpose**
+7. **expect_time**
 8. **users_id**
    1. forien key
+   2. 雖然是create 填，到是是program 自動填
 
 cycleEvents產生event的方法是，當有event 的doneTS 被update，如果event 是有cycleID 的，表示是 cycleEvents 所產生的，所以就用cycleID找到該 template，自動新產生一個job （自動補滿最近的7個 job）。
 
@@ -247,17 +248,17 @@ cycleEvents產生event的方法是，當有event 的doneTS 被update，如果eve
 
 接下來的問題是today_events，到底放那裡？我直覺是在user 的column額外多一欄放array of  event id，因為也多少。但後來想到，這和user friend 一樣，都是一對多。user friend 是額外拆一個表，所以這裡也拆一個
 
-### today_events
+### ~~today_events~~
 
 這個項目到底應不應該和events 合併，只是多一個boolean column。
 
-根據**entity classes**  的原則，確實應該要合併
+根據**entity classes**  的原則，**確實應該要合併**
 
-1. id
-2. users_id
-   1. forien_key
-3. events_id
-   1. forien_key
+1. ~~id~~
+2. ~~users_id~~
+   1. ~~forien_key~~
+3. ~~events_id~~
+   1. ~~forien_key~~
 
 ## reference
 
@@ -590,4 +591,12 @@ cra 同css name 會conflict
 
 ---
 
-如果要能夠計算today veg time，就必需在user db 多加entry
+
+
+6/27
+
+may do
+
+* 如果要能夠計算today veg time，就必需在user db 多加entry
+* react-router-dom unmount animate
+* maybe change mission today disp list to table，不過應該要想一下，today disp 的意義到底是什麼，特別是在手機上，user 可能覺得，我操作的正常比較重要，disp 其實不是操作必須的

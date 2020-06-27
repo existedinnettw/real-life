@@ -89,8 +89,9 @@ const eventSlice = createSlice({
             let events=state.events.filter(e=>{
                 return e.id!==action.payload.id
             })
-            state.events = ascDueTEventsSort([action.payload,...events])
+            state.events = ascDueTEventsSort([action.payload,...events])  //check this
             state.eventLoadingCount-=1
+            // console.log(state.events)
         },
         [modEvent.rejected]: (state, action) => {
             state.eventLoadingCount-=1

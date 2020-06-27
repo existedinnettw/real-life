@@ -1,6 +1,5 @@
-.ms-root {
-    background-image: linear-gradient( rgba(213, 184, 255, 0.5), rgba(0, 0, 0, 0.5)),
-    url(./background.jpg);
+.ms__root {
+    background-image: linear-gradient( rgba(213, 184, 255, 0.5), rgba(0, 0, 0, 0.5)), url(./img/background.jpg);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
@@ -8,29 +7,29 @@
     min-height: 100vh;
 }
 
-
 .bg-fade-mask {
-    background-color: rgba(0, 0, 0, 0);
+    min-height: 100vh;
 }
-.bg-fade-mask-enter {
+
+.bg-fade-mask--ani-enter {
     background-color: rgba(0, 0, 0, 0.9);
 }
 
-.bg-fade-mask-enter-active {
+.bg-fade-mask--ani-enter-active {
     background-color: rgba(0, 0, 0, 0);
     transition: background-color 600ms ease-out;
 }
 
-.bg-fade-mask-exit {
+.bg-fade-mask--ani-exit {
     background-color: rgba(255, 255, 255, 0);
 }
 
-.bg-fade-mask-exit-active {
+.bg-fade-mask--ani-exit-active {
     background-color: rgba(255, 255, 255, 1);
     transition: background-color 500ms;
 }
 
-.ms-title {
+.ms__title {
     font-size: 2rem;
     margin: 1.5rem;
     text-align: center;
@@ -40,40 +39,51 @@
     text-align: left;
 }
 
-.ms-ant-card {
+.ms__ant-card {
     margin: 1rem auto;
     /*hot fix*/
     /* position: static; */
     z-index: 10;
 }
 
-
-.ms-float-box {
+.ms__float-box {
     color: white;
     border-radius: 1rem;
     /* box-shadow: 0 0 1rem grey; */
     opacity: 0.96;
 }
-.today-work-disp{
+
+.today-work-disp {
     margin: 1.5rem 1rem 2rem 1rem;
     padding: 0 0 1rem 0;
 }
 
+
+.ms__carousel{
+    padding: 0 6% 2rem 6%;
+}
 /* this may cause css clash, however react-bootstrap doesn't output style setting */
 .carousel-control-prev, .carousel-control-next {
     width: 5%;
 }
 
-.ms-card{
+.ms__card-div {
     margin: 0.5rem 0.3rem;
     padding: 0.3rem 1.5rem;
     border-radius: .3rem;
     color: rgb(25, 25, 25);
-    background-color: rgba(255, 255, 255, 0.99);
+    background-color: rgba(255, 229, 229, 0.938);
     user-select: none;
     /* z-index: 99; */
+    box-shadow: .2rem .2rem .5rem .1rem rgba(131, 131, 131, 0.849);
 }
-.ant-list-header{
+
+.ms__card-div--istoday {
+    background-color: rgba(72, 61, 139, 0.8);
+    color: white;
+}
+
+.ant-list-header {
     /*watch out clash*/
     margin: 0rem 0rem;
     padding: 0rem 0rem;
@@ -81,14 +91,28 @@
 
 /*can't overcome ant-col over card by z-index*/
 
-/* .ms-card-preview {
-    background-color: rgba(255, 255, 255, 0.5);
-    padding: 0 3rem;
-} */
+/*the preview style is fixed*/
 
+.ms__card-div-preview {
+    display: fixed;
+    padding: 0 3rem;
+    z-index: 99;
+    background-color: rgba(255, 178, 178, 0.801);
+    box-shadow: .2rem .2rem .5rem .1rem rgba(131, 131, 131, 0.849);
+    border-radius: .3rem;
+    /* color: rgb(25, 25, 25); */
+    color: rgb(85, 85, 85);
+}
+
+.ms__card-div-preview-box {
+    /* display: flex;
+    flex-direction: row;
+    justify-content: center; */
+    padding: 0 3rem;
+}
 
 .interactive-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin: 'auto';
     display: 'block';
 }
@@ -96,12 +120,19 @@
 .interactive-icon-container {
     border-style: solid;
     border-radius: 1rem;
-    background-color: rgba(255, 234, 234, 0.993);
-    margin: 1rem 1rem 3rem 1rem;
-    height: 4.5rem;
+    background-color: rgba(255, 221, 250, 0.993);
+    box-shadow: 0 0 .1rem 2px rgba(255, 255, 255, 0.849);
+    margin: .5rem .5rem .5rem .5rem;
+    height: 4rem;
 }
 
-.interactive-icon-container-hover {
+.interactive-icon-container--can-drop {
+    transform: scale(1.1);
+    /* Equal to scaleX(0.7) scaleY(0.7) */
+    background-color: rgba(255, 158, 250, 0.95);
+}
+
+.interactive-icon-container--hover {
     transform: scale(1.2);
     /* Equal to scaleX(0.7) scaleY(0.7) */
     background-color: rgba(153, 51, 255, 0.95);
@@ -121,7 +152,7 @@
     height: 4rem;
 } */
 
-.ms-config-p {
+.ms__config-p {
     font-size: 1rem;
     text-align: left;
     margin: .5rem;

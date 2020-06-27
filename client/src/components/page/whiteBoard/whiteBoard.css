@@ -8,7 +8,7 @@ https://stackoverflow.com/questions/37641996/react-routes-different-styling-on-b
 
 .wb-root {
     text-align: center;
-    background-image: linear-gradient( rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5)), url(./rz-comp-blue-close-up-colors-cracks-866351.jpg);
+    background-image: linear-gradient( rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5)), url(./img/rz-comp-blue-close-up-colors-cracks-866351.jpg);
     /* background-image: linear-gradient( rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5)),
     url(./network-4348658_1280.jpg); */
     background-repeat: no-repeat;

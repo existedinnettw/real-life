@@ -16,8 +16,10 @@
     width: 6vw;
     height: 100vh;
     padding: 0;
-    background: rgba(255, 255, 255, 0);
+    /* background: rgba(255, 255, 255, 0.925); */
+    background: transparent;
     border: .3rem;
+    z-index: 99;
     /* cursor: pointer; */
 }
 /* @media screen and (min-width: 768px) {
