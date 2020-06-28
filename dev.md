@@ -600,3 +600,11 @@ may do
 * 如果要能夠計算today veg time，就必需在user db 多加entry
 * react-router-dom unmount animate
 * maybe change mission today disp list to table，不過應該要想一下，today disp 的意義到底是什麼，特別是在手機上，user 可能覺得，我操作的正常比較重要，disp 其實不是操作必須的
+
+---
+
+crontab 本身就是很複雜的功能，要用點選的可以，但是組合太多。我覺得比較好方法是維持用打的。但是有5個格子要打，如何設計好的格子，不會點錯，操作快速，適合mobile 操作... 是重要事項。
+
+cron的週期格子如果有值，表示它是更高一級的週期性job，e.g. 最大是day 有值，表示最長的週期是monthly，(不能完全說是monthly  job，因為可以在某一day 裡特定的多個hour做事，也可以1month裡，有多個day 做事)，或說at least monthly, at least monthly frequency
+
+---

@@ -25,7 +25,7 @@ import { useDrag, useDrop } from "react-dnd";
 import { idEventFilter, unDoneEventsFilter } from "util/filter"
 import { CSSTransition } from "react-transition-group";
 
-import {styles} from './antStyle'
+import { styles } from './antStyle'
 import './mission.css'
 
 class RInputRow extends Component {
@@ -84,11 +84,22 @@ class RInputRow extends Component {
                         onChange={(date, dS) => this.setState({ dueTime: date })} />
                 </Col>
                 <Col {...backBp} >
-                    <InputNumber min={0.25} max={8} step={0.25}
-                        value={this.state.expectTime}
-                        formatter={value => `${value} hr`}
-                        parser={value => value.replace('hr', '')}
-                        onChange={val => this.setState({ expectTime: val })} />
+                    <Tooltip title={'expect time (hr)'}>
+                        <InputNumber min={0.25} max={8} step={0.25}
+                            value={this.state.expectTime}
+                            formatter={value => {
+                                return `${value} hr`
+                            }}
+                            parser={value => {
+                                return value.replace(/[a-z ]/g, '')
+                            }}
+                            onChange={val => {
+                                // val => val.toString().replace(/\D/g,'')
+                                // console.log(val)
+                                this.setState({ expectTime: val })
+                            }}
+                        />
+                    </Tooltip>
                 </Col>
                 <Col {...backBp}
                     display='flex'
@@ -147,7 +158,7 @@ function ScheCard(props) {
     });
     return (
         <Card
-            loading={props.loading}
+            // loading={props.loading} //effect not good
             className='ms__ant-card'
             bodyStyle={styles.antCardBody}
             headStyle={styles.antCardHeader}
@@ -231,7 +242,8 @@ class CurrentMission extends Component {
         return finEvents
     }
     render() {
-        const { loading } = !!this.props.eventLoadingCount
+        const loading = !!this.props.eventLoadingCount
+        // console.log(this.props.eventLoadingCount)
         const outdatedDt = this.eventsFilter('outdated')
         const oneWeekDt = this.eventsFilter('oneWeek')
         const oneMonthDt = this.eventsFilter('oneMonth')
@@ -255,7 +267,7 @@ class CurrentMission extends Component {
                         return (
                             <Col key={idx} xs={24} sm={12} lg={6}>
                                 {!!el.length &&
-                                    < ScheCard loading={loading} titleStr={titleStrArr[idx]} dataArr={el} />}
+                                    <ScheCard loading={loading} titleStr={titleStrArr[idx]} dataArr={el} />}
                             </Col>)
                     })}
                 </Row>

@@ -4,6 +4,8 @@ import YouTube from 'react-youtube';
 
 import './help.css'
 
+//actually don't need to write by my self, use "Modal" or  "Message"
+
 export default function Help(props) {
     // may be try vieo react
     let [w, setW] = useState(window.innerWidth)

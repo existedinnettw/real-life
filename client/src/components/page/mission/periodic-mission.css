@@ -1,0 +1,26 @@
+.pm__radio {
+    display: inline;
+}
+
+.pm__radio-btn {
+    margin: .2rem 0 .2rem 1.3rem;
+}
+
+.pm__radio-btn--input {
+    /* min-width: 3rem; */
+    width: 3rem;
+    margin-left: 0;
+    /* margin-right: .5rem; */
+}
+
+.pm__collapse-header-box {}
+.pm__collapse-header-box--warning {
+    color: #eb2f96;
+}
+
+.pm__cron-alert {
+    display: inline-block;
+    margin-left: auto;
+    padding-top: .4rem;
+    padding-bottom: .4rem;
+}

@@ -1,14 +1,15 @@
 import React, { Component, useState } from 'react'
+
 import {
     Row, Col,
-    Input, DatePicker, Button, Affix, Card, List, Typography, Tooltip, InputNumber
+    Input, Collapse, Alert, Button, Affix, Card, List, Typography, Tooltip, InputNumber, Radio
 } from 'antd';
 import {
-    PlusOutlined, DeleteOutlined,
+    PlusOutlined, DeleteOutlined, WarningTwoTone
 } from '@ant-design/icons';
 import 'antd/dist/antd.css'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import parser from 'cron-parser'
 
 // import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
 import { remB } from 'util/constant'
@@ -25,6 +26,109 @@ import moment from 'moment'
 
 import { styles } from './antStyle'
 import './mission.css'
+import './periodic-mission.css'
+import { useEffect } from 'react';
+
+function CronTabInput(props) {
+    const [value, setValue] = useState(1)
+    const [min, setMin] = useState('*')
+    const [hr, setHr] = useState('7')
+    const [day, setDay] = useState('*')
+    const [month, setMonth] = useState('*')
+    const [weekDay, setWeek] = useState('*')
+
+    const [isCollapseOpen, setIsCollapseOpen] = useState(false)
+    const [interval, setInterval] = useState(false)
+
+    const timeStrArr = ['min', 'hr', 'day', 'month', 'week day']
+    const timeArr = [min, hr, day, month, weekDay]
+    const setTimeArr = [setMin, setHr, setDay, setMonth, setWeek]
+
+    useEffect(() => {
+        try {
+            const interval = moment(parser.parseExpression(`${min} ${hr} ${day} ${month} ${weekDay}`).next().toDate());
+            setInterval(interval)
+            // console.log(interval.next().toDate())
+        } catch (err) {
+            // console.log(err)
+            console.log('Error: ' + err.message);
+            setInterval(false)
+        }
+    }, [min, hr, day, month, weekDay])
+
+    // console.log(interval.next().toString())
+    return (
+        <Collapse onChange={() => {
+            // console.log('is collapse open:', isCollapseOpen)
+            setIsCollapseOpen(!isCollapseOpen)
+        }}>
+            <Collapse.Panel header={
+                <Row justify='space-between' align='middle'
+                    className={`pm__collapse-header-box ${!interval && 'pm__collapse-header-box--warning'}`}
+                >
+                    <Col >
+                        {props.header}:
+                    </Col>
+
+                    <Col >
+                        {min} {hr} {day} {month} {weekDay}
+                    </Col>
+                    <Col >
+                        {!!interval &&
+                            interval.format('M/D/YYYY, h:mm')
+                        }
+                    </Col>
+                    <Col >
+                        {!interval &&
+                            <WarningTwoTone twoToneColor="#eb2f96" />
+                        }
+                    </Col>
+                </Row>
+            } >
+                <Radio.Group
+                    style={{ width: '100%' }}
+                    defaultValue={value}
+                    buttonStyle="solid"
+                    onChange={(e) => {
+                        setValue(e.target.value)
+                    }}
+                >
+                    {timeStrArr.map((tStr, idx) => {
+                        return (
+                            <div key={idx}
+                                className='pm__radio'
+                            >
+                                <Radio.Button
+                                    className='pm__radio-btn'
+                                    value={idx}>
+                                    {tStr}
+                                </Radio.Button>
+                                {value === idx ?
+                                    <Input
+                                        className='pm__radio-btn pm__radio-btn--input'
+                                        value={timeArr[idx]}
+                                        onChange={(e) => {
+                                            let val = e.target.value
+                                            if (val) {
+                                                if (val.length > 1) {
+                                                    val = val.replace(/\*/g, '')
+                                                }
+                                            }
+                                            else {
+                                                val = '*'
+                                            }
+                                            (setTimeArr[idx])(val)
+                                        }}
+                                    />
+                                    : null}
+                            </div>
+                        )
+                    })}
+                </Radio.Group>
+            </Collapse.Panel>
+        </Collapse>
+    )
+}
 
 class PWInputRow extends Component {
     constructor(props) {
@@ -48,9 +152,10 @@ class PWInputRow extends Component {
         this.props.dispatch(addEvent(payload))
     }
 
-    // change datepicker to corn picker
+    // change datepicker to cron picker
     render() {
         const forwardBp = { xs: 12, md: 8 }
+        const cronBP = { xs: 24 }
         const backBp = { xs: 8, md: 6 }
         return (
             <Row justify='left'
@@ -71,22 +176,27 @@ class PWInputRow extends Component {
                         onChange={e => this.setState({ purpose: e.target.value })} />
                 </Col>
 
-                <Col {...backBp} >
-                    <DatePicker placeholder="init date" className="inputOption"
-                        value={this.state.initTime}
-                        onChange={(date, dS) => this.setState({ initTime: date })} />
+                <Col {...cronBP} >
+                    <CronTabInput header='init crontab' />
                 </Col>
-                <Col {...backBp} >
-                    <DatePicker placeholder="due date" className="inputOption"
-                        value={this.state.dueTime}
-                        onChange={(date, dS) => this.setState({ dueTime: date })} />
+                <Col {...cronBP} >
+                    <CronTabInput header='due crontab' />
                 </Col>
                 <Col {...backBp} >
                     <InputNumber min={0.25} max={8} step={0.25}
                         value={this.state.expectTime}
-                        formatter={value => `${value} hr`}
-                        parser={value => value.replace('hr', '')}
-                        onChange={val => this.setState({ expectTime: val })} />
+                        formatter={value => {
+                            return `${value} hr`
+                        }}
+                        parser={value => {
+                            return value.replace(/[a-z ]/g, '')
+                        }}
+                        onChange={val => {
+                            // val => val.toString().replace(/\D/g,'')
+                            // console.log(val)
+                            this.setState({ expectTime: val })
+                        }}
+                    />
                 </Col>
                 <Col {...backBp}
                     display='flex'
@@ -106,9 +216,6 @@ class PWInputRow extends Component {
 PWInputRow = connect(state => ({
     ...state.event
 }))(PWInputRow)
-
-
-
 
 
 class PeriodicMission extends Component {
