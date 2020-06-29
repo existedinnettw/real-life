@@ -52,6 +52,11 @@
     /* box-shadow: 0 0 1rem grey; */
     opacity: 0.96;
 }
+.ms__input--not-accept{
+    border-color: rgba(76, 0, 139, 0.808);
+    border-width: .2rem;
+    color:rgb(77, 0, 139);
+}
 
 .today-work-disp {
     margin: 1.5rem 1rem 2rem 1rem;

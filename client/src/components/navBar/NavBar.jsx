@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 
 import SideNav from 'react-simple-sidenav';
 
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import 'antd/dist/antd.css'
+
+import TimeoutTooltip from 'components/timeoutTooltip/TimeoutTooltip'
 
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
@@ -31,6 +33,8 @@ class NavBar extends Component {
     render() {
         return (
             <div >
+                <TimeoutTooltip delayTime={2000} placement='right'
+                title="menu">
                 <div className='tp-header'>
                     <div className='nav-btn'
                         onClick={(e) => {
@@ -64,6 +68,7 @@ class NavBar extends Component {
 
                     </div>
                 </div>
+                </TimeoutTooltip>
 
 
                 <SideNav showNav={this.state.showNav || !this.props.user.isLogin}
@@ -88,16 +93,20 @@ class NavBar extends Component {
                             <div>
                                 Real-Life
                             {!this.props.user.isLogin ?
-                                    <Button className='auth-btn'
-                                        ghost={true}>
-                                        <a href={`${process.env.BASE_URL}/auth/google`}>
-                                            login</a>
-                                    </Button> :
+                                    <Tooltip title='login with google to continue' visible={true}
+                                        placement='rightBottom' color='cyan'>
+                                        <Button className='auth-btn'
+                                            ghost={true}>
+                                            <a href={`${process.env.BASE_URL}/auth/google`}>
+                                                login</a>
+                                        </Button>
+                                    </Tooltip> :
                                     <Button className='auth-btn'
                                         ghost={true}>
                                         <a href={`${process.env.BASE_URL}/auth/logout`}>
                                             logout</a>
-                                    </Button>}
+                                    </Button>
+                                }
                             </div>
                             <div className='nav-bar-subtitle'>
                                 A scheduler to prevent from vegging.
@@ -120,7 +129,7 @@ class NavBar extends Component {
 
                     </div>
                 </SideNav>
-            </div>
+            </div >
         )
     }
 }

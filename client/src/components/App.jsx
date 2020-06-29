@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
+
+// import {
+//     message
+// } from 'antd';
+import 'antd/dist/antd.css'
+
 import { fetchEvent } from 'state/eventSlice'
 import { fetchCycleEvent } from 'state/cycleEventSlice'
 import { checkLogin } from 'state/userSlice'
@@ -41,9 +47,12 @@ class Layout extends Component {
         )
     }
 }
+Layout = connect(state => ({
+    ...state,
+}))(Layout)
 
 class App extends Component {
-    componentWillMount() {
+    componentDidMount() {
         this.props.dispatch(checkLogin())
         if (this.props.user.isLogin) {
             this.props.dispatch(fetchEvent())

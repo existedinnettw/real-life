@@ -1,19 +1,18 @@
 import React, { Component, useState, useEffect } from 'react'
 
 import {
-    Row, Col, Table, Radio, Divider, InputNumber, message
+    Row, Col, Table, Radio, Divider, InputNumber, message, Button
 } from 'antd';
-// import Button from 'react-bootstrap/Button'
 import {
     BulbTwoTone
 } from '@ant-design/icons';
-import { Button } from 'antd';
 import 'antd/dist/antd.css'
 
 import Sound from 'react-sound';
 import sound from './bensound-summer.mp3';
 
 import Help from 'components/page/help/Help'
+import TimeoutTooltip from 'components/timeoutTooltip/TimeoutTooltip'
 
 import { /*idEventFilter*/ todayEventsFilter, } from "util/filter"
 import { /*fetchEvent,*/ modEvent } from 'state/eventSlice'
@@ -33,7 +32,6 @@ function WBGreet(props) {
     const [showHelp, setShowHelp] = useState(false)
     useEffect(
         () => {
-            message.info('click bulb to get help...', [3], /*onclose*/)
             const intervalId = setInterval(() => {
                 setNow(moment())
             }, 1000)
@@ -72,18 +70,24 @@ function WBGreet(props) {
                                 I just want to veg out...
                                 </Col>
                             <Col xs={8} >
+
                                 <Button
                                     style={{
                                         width: '5rem', height: '5rem',
                                         border: 'none',
                                     }}
                                     ghost={true}
-                                    icon={<BulbTwoTone
-                                        style={{
-                                            fontSize: '4rem',
-                                        }}
-                                    // className='wb-help-icon'
-                                    />}
+                                    icon={
+                                        <TimeoutTooltip delayTime={2000} placement='right'
+                                        title="get hint">
+                                            <BulbTwoTone
+                                                style={{
+                                                    fontSize: '4rem',
+                                                }}
+                                            // className='wb-help-icon'
+                                            />
+                                        </TimeoutTooltip>
+                                    }
                                     shape="circle" size="large"
                                     onClick={() => {
                                         setShowHelp(true)
@@ -217,31 +221,30 @@ class WBStart extends Component {
         super(props)
         this.state = {
             now: moment(),
+            interval: moment.duration(moment().diff(this.props.startTime))
         }
-        this.interval = moment.duration(this.state.now.diff(this.props.startTime))
-
     }
     componentDidMount() {
         this.intervalId = setInterval(() => {
-            this.setState({ now: moment() })
-            this.interval = moment.duration(this.state.now.diff(this.props.startTime))
-        }, 1000);
-        // console.log(this.state.play)
+            this.setState({
+                now: moment(),
+                interval: moment.duration(moment().diff(this.props.startTime))
+            })
+        }, 1000);//end of setInterval
     }
     componentWillUnmount() {
         clearInterval(this.intervalId)
         const interval = this.interval
-        // console.log('wb_start unmount', interval.as('seconds'), interval.as('minutes'), interval.as('hours'))
-        //this place is why I use class component
-        this.props.unMountCB(this.props.workingEvent, interval.as('hours'))
+        this.props.unMountCB(this.props.workingEvent, this.state.interval.as('hours'))
     }
 
     render() {
         const props = this.props
-        // console.log(this.interval.as('minutes'))
+        const interval = this.state.interval
         let missionStr = `To do: ${props.workingEvent.summary}`
-        let leftMin = Math.ceil(props.expectWorkTime - this.interval.as('minutes'))
-        let timeStr = `${leftMin} min left`
+        let leftMin = props.expectWorkTime - interval.as('minutes')
+        console.log(interval)
+        let timeStr = `${Math.floor(leftMin)} min ${Math.ceil(60 * (leftMin - Math.floor(leftMin)))} sec left`
         return (
             <div className="wb-start" >
                 <Col></Col>

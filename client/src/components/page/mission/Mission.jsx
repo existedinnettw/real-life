@@ -145,7 +145,7 @@ function TodayWorkDisp(props) {
                                         {item.purpose}
                                     </Col>
                                     <Col {...colBP}>
-                                        {item.expectTime}
+                                        {item.expect_time}
                                         {}
                                     </Col>
                                     <Col {...colBP}>

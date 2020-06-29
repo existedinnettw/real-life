@@ -2,10 +2,10 @@
 import React, { Component, useState } from 'react'
 import {
     Row, Col,
-    Input, DatePicker, Button, Affix, Tooltip, InputNumber
+    Input, DatePicker, Button, Affix, Tooltip, InputNumber,
 } from 'antd';
 import {
-    PlusOutlined,
+    PlusOutlined, WarningTwoTone,
     CarryOutOutlined, ImportOutlined, ExportOutlined, DeleteOutlined,
 } from '@ant-design/icons';
 import 'antd/dist/antd.css'
@@ -51,34 +51,53 @@ class RInputRow extends Component {
         return (
             <Row justify='left'
                 gutter={[{ xs: 6, sm: 16, md: 16, lg: 2 * remB }, { xs: 4, sm: 8, md: 8, lg: remB }]}>
+
                 <Col {...forwardBp} >
-                    <Input placeholder="event summary"
-                        value={this.state.summary}
-                        onChange={e => this.setState({ summary: e.target.value })} />
+                    <Tooltip title={'Express what you want to do.(necessary)'}
+                    >
+                        <Input placeholder="event summary"
+                            className={`${!this.state.summary && 'ms__input--not-accept'}`}
+                            value={this.state.summary}
+                            onChange={e => this.setState({ summary: e.target.value })} />
+                        {/* <span>
+                            {!this.state.summary && <WarningTwoTone twoToneColor="#eb2f96" />}
+                        </span> */}
+                    </Tooltip>
                 </Col>
+
+
                 <Col {...forwardBp} >
-                    <Input placeholder="event target"
-                        value={this.state.target}
-                        onChange={e => this.setState({ target: e.target.value })} />
+                    <Tooltip title={'Criteria to reveal finished.'}>
+                        <Input placeholder="event target"
+                            value={this.state.target}
+                            onChange={e => this.setState({ target: e.target.value })} />
+                    </Tooltip>
                 </Col>
+
                 <Col {...forwardBp} >
-                    <Input placeholder="event purpose"
-                        value={this.state.purpose}
-                        onChange={e => this.setState({ purpose: e.target.value })} />
+                    <Tooltip title={'The reason to do this event.'}>
+                        <Input placeholder="event purpose"
+                            value={this.state.purpose}
+                            onChange={e => this.setState({ purpose: e.target.value })} />
+                    </Tooltip>
                 </Col>
 
                 <Col {...backBp} >
-                    <DatePicker placeholder="init date" className="inputOption"
-                        value={this.state.init_time}
-                        onChange={(date, dS) => this.setState({ init_time: date })} />
+                    <Tooltip title={'init time.(necessary)'}>
+                        <DatePicker placeholder="init date" className="inputOption"
+                            value={this.state.init_time}
+                            onChange={(date, dS) => this.setState({ init_time: date })} />
+                    </Tooltip>
                 </Col>
                 <Col {...backBp} >
-                    <DatePicker placeholder="due date" className="inputOption"
-                        value={this.state.due_time}
-                        onChange={(date, dS) => this.setState({ due_time: date })} />
+                    <Tooltip title={'due time.(necessary)'}>
+                        <DatePicker placeholder="due date" className="inputOption"
+                            value={this.state.due_time}
+                            onChange={(date, dS) => this.setState({ due_time: date })} />
+                    </Tooltip>
                 </Col>
                 <Col {...backBp} >
-                    <Tooltip title={'expect time (hr)'}>
+                    <Tooltip title={'expect time(hr).(necessary)'}>
                         <InputNumber min={0.25} max={8} step={0.25}
                             value={this.state.expect_time}
                             formatter={value => {
@@ -99,6 +118,7 @@ class RInputRow extends Component {
                     display='flex'
                 >
                     <Button onClick={this.handleSubmit}
+                        htmlType="submit"
                         style={{
                             display: 'static',
                             marginLeft: 'auto'
@@ -178,7 +198,7 @@ class CurrentMission extends Component {
                 </Row>
                 <div style={{ padding: '.3rem' }}></div>
 
-                <Row justify='left' style={{ width: '90%', margin: '0 auto' }}>
+                <Row justify='left' style={{ margin: '0 auto' }}>
                     {dtArr.map((el, idx) => {
                         return (
                             <React.Fragment key={idx}>

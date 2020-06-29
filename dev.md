@@ -613,7 +613,32 @@ cron的週期格子如果有值，表示它是更高一級的週期性job，e.g.
 
 6/29
 
+###### tag
+
 may do
 
 * sound control config in sql user model or in local
-* safty update sql model, when already deploy
+* how to safly update sql model, when already deploy
+* reveal all done event
+* place to be able to modify event 
+* place to be able to detaily view event
+* sorting, filter event 到底應該靠server 還是client
+* crontab simple ver
+
+6/30
+
+經過給幾個人測試，大概有幾點
+
+* 每一個變化都要立刻會有反應，一開始為了簡少干擾所以我計時器沒有顯示sec，但很多人反應不知道在幹麻就直接關掉了
+* 當一個頁面攤在眼前，user很難知道到底要怎麼操作。不知道要login、不知道滑鼠左滑會顯示菜單、不知道要切到mission去manage 工作。
+  * tooltip 很適合告知，在desktop 環境有mouse over 效果好。mobile 就要主動的顯示。tooltip 比較適合button type，drag and drop 打折。antd 現在沒有自動消失的tooltip
+  * message, 是很懶人的辦法。效果是沒有position，但是implement 簡單，是沒有辦法的辦法。
+* accessibility 要快，user 想要立刻馬上知道這個東西是什麼，即使google login 已經非常快，或是有隱私、反壟斷...因素不想登入，至少有兩個user 要求 guest mode。我認為主要的好處還是guest 可以讓user 馬上的得到 操作制約，大增留下來的機率
+  * 實踐非常煩，要麼用不同的api，要麼用前端自己的fake data，action request 直接return ，且寫另一組logic
+
+
+
+
+
+
+

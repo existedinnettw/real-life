@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react'
 
 import {
     Row, Col,
-    Input, Collapse, Button, Affix, Card, List, Typography, InputNumber, Radio
+    Input, Collapse, Button, Affix, Card, List, Typography, InputNumber, Radio, Tooltip
 } from 'antd';
 import {
     PlusOutlined, DeleteOutlined, WarningTwoTone
@@ -35,7 +35,7 @@ function CronTabInput(props) {
     const [weekDay, setWeek] = useState('*')
 
     const [isCollapseOpen, setIsCollapseOpen] = useState(false)
-    const [interval, setInterval] = useState(false)
+    const [interval, setIntervalVal] = useState(false)
 
     const timeStrArr = ['min', 'hr', 'day', 'month', 'week day']
     const timeArr = [min, hr, day, month, weekDay]
@@ -45,13 +45,13 @@ function CronTabInput(props) {
         try {
             const cronStr = `${min} ${hr} ${day} ${month} ${weekDay}`
             const interval = moment(parser.parseExpression(cronStr).next().toDate());
-            setInterval(interval)
+            setIntervalVal(interval)
             // console.log(interval.next().toDate())
             props.setCron(cronStr)
         } catch (err) {
             // console.log(err)
             console.log('Error: ' + err.message);
-            setInterval(false)
+            setIntervalVal(false)
         }
     }, [min, hr, day, month, weekDay])
 
@@ -156,19 +156,30 @@ class PWInputRow extends Component {
             <Row justify='left'
                 gutter={[{ xs: 6, sm: 16, md: 16, lg: 2 * remB }, { xs: 4, sm: 8, md: 8, lg: remB }]}>
                 <Col {...forwardBp} >
-                    <Input placeholder="event summary"
-                        value={this.state.summary}
-                        onChange={e => this.setState({ summary: e.target.value })} />
+                    <Tooltip title={'Express what you want to do.(necessary)'}
+                    >
+                        <Input placeholder="event summary"
+                            className={`${!this.state.summary && 'ms__input--not-accept'}`}
+                            value={this.state.summary}
+                            onChange={e => this.setState({ summary: e.target.value })} />
+                        {/* <span>
+                            {!this.state.summary && <WarningTwoTone twoToneColor="#eb2f96" />}
+                        </span> */}
+                    </Tooltip>
                 </Col>
                 <Col {...forwardBp} >
-                    <Input placeholder="event target"
-                        value={this.state.target}
-                        onChange={e => this.setState({ target: e.target.value })} />
+                    <Tooltip title={'Criteria to reveal finished.'}>
+                        <Input placeholder="event target"
+                            value={this.state.target}
+                            onChange={e => this.setState({ target: e.target.value })} />
+                    </Tooltip>
                 </Col>
                 <Col {...forwardBp} >
-                    <Input placeholder="event purpose"
-                        value={this.state.purpose}
-                        onChange={e => this.setState({ purpose: e.target.value })} />
+                    <Tooltip title={'The reason to do this event.'}>
+                        <Input placeholder="event purpose"
+                            value={this.state.purpose}
+                            onChange={e => this.setState({ purpose: e.target.value })} />
+                    </Tooltip>
                 </Col>
 
                 <Col {...cronBP} >
@@ -182,20 +193,22 @@ class PWInputRow extends Component {
                     }} />
                 </Col>
                 <Col {...backBp} >
-                    <InputNumber min={0.25} max={8} step={0.25}
-                        value={this.state.expect_time}
-                        formatter={value => {
-                            return `${value} hr`
-                        }}
-                        parser={value => {
-                            return value.replace(/[a-z ]/g, '')
-                        }}
-                        onChange={val => {
-                            // val => val.toString().replace(/\D/g,'')
-                            // console.log(val)
-                            this.setState({ expect_time: val })
-                        }}
-                    />
+                    <Tooltip title={'expect time(hr).(necessary)'}>
+                        <InputNumber min={0.25} max={8} step={0.25}
+                            value={this.state.expect_time}
+                            formatter={value => {
+                                return `${value} hr`
+                            }}
+                            parser={value => {
+                                return value.replace(/[a-z ]/g, '')
+                            }}
+                            onChange={val => {
+                                // val => val.toString().replace(/\D/g,'')
+                                // console.log(val)
+                                this.setState({ expect_time: val })
+                            }}
+                        />
+                    </Tooltip>
                 </Col>
                 <Col {...backBp}
                     display='flex'
@@ -269,7 +282,7 @@ class PeriodicMission extends Component {
                         <PWInputRow />
                     </Col>
                 </Row>
-                <Row justify='left' style={{ width: '90%', margin: '0 auto' }}>
+                <Row justify='left' style={{ margin: '0 auto' }}>
                     {dtArr.map((el, idx) => {
                         return (
                             <React.Fragment key={idx}>

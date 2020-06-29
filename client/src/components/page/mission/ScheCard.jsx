@@ -1,6 +1,6 @@
 
-import React,{useState} from 'react'
-import {Card, Tooltip, Button}  from 'antd';
+import React, { useState } from 'react'
+import { Card, Tooltip, Button } from 'antd';
 import 'antd/dist/antd.css'
 
 import { useDrag, useDrop } from "react-dnd";
@@ -8,6 +8,7 @@ import { ItemTypes } from 'util/constant'
 
 import { styles } from './antStyle'
 import './mission.css'
+import TimeoutTooltip from '../../timeoutTooltip/TimeoutTooltip';
 
 function DraggableCardDiv(props) {
     const [{ isDragging }, dragRef] = useDrag({
@@ -40,7 +41,12 @@ export function ScheCard(props) {
         const propsToColumn = { event };
         return (
             <div key={`column-${columnIndex}`}>
-                <DraggableCardDiv {...propsToColumn} />
+                {(columnIndex === 0 && event.summary.split(' ')[0]==='example' ) ?
+                    <TimeoutTooltip title='drag event' delayTime={2000} >
+                        <DraggableCardDiv {...propsToColumn} />
+                    </TimeoutTooltip>
+                    : <DraggableCardDiv {...propsToColumn} />
+                }
             </div>
         )
     });

@@ -6,7 +6,7 @@ import moment from 'moment'
 import { listCycleEvents, createCycleEvent, delCycleEvent, updateCycleEvent } from "api/cycleEvent"
 import { cycleEventsIdEventsFilter, noneOutdatedEventsFilter } from "util/filter"
 // import store from "state/store"
-import { addEvent } from "state/eventSlice";
+import { addEvent, fetchEvent } from "state/eventSlice";
 // import _ from 'lodash'
 
 // cycleEvent STATE
@@ -17,6 +17,10 @@ const cycleEventState = {
 
 function createThreeEvents(response, thunkAPI) {
     const { dispatch, getState } = thunkAPI
+    // mutex, may be use signal?
+    while(getState().event.eventLoadingCount){
+        
+    }
     response.forEach((el, idx) => {
         let events = getState().event.events
         events = noneOutdatedEventsFilter(cycleEventsIdEventsFilter(events, el.id))
@@ -62,7 +66,7 @@ export const fetchCycleEvent = createAsyncThunk('cycleEvent/fetchCycleEvent',
 export const addCycleEvent = createAsyncThunk('cycleEvent/addCycleEvent',
     async (payload, thunkAPI) => {
         const response = await createCycleEvent(payload)
-        console.log(response)
+        // console.log(response)
         createThreeEvents([response], thunkAPI)
         return response
     }
@@ -79,6 +83,8 @@ export const rmvCycleEvent = createAsyncThunk('cycleEvent/rmvCycleEvent',
     // https://stackoverflow.com/questions/19898274/on-delete-set-null-in-postgres
     async (cycleEventID, thunkAPI) => {
         const response = await delCycleEvent(cycleEventID) //should no respond
+        while(thunkAPI.getState().event.eventLoadingCount){} 
+        thunkAPI.dispatch(fetchEvent()) //direct modify cycleID is actually better
         return response
     }
 )
