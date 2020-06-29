@@ -58,10 +58,11 @@ function deleteSQL(id, users_id) {
     return db.many(sql, { id, users_id })
 }
 function creatDefaultEvents(users_id) {
+    let face='(◕ܫ◕)'
     const sql = `
     INSERT INTO cycle_events (summary, init_cron, due_cron, target, expect_time, users_id)
     VALUES 
-    ('example cycle_events (◕ܫ◕)', '0 9 * * 2-4', '* 10 * * 2-4', 'full function and done', NULL, $<users_id>)
+    ('example cycle_events ${face}', '0 9 * * 2-4', '0 10 * * 2-4', 'full function and done', NULL, $<users_id>)
     RETURNING *
     `
     // INSERT INTO cycle_events (summary, init_cron, due_cron, target, expect_time, users_id)
@@ -72,7 +73,6 @@ function creatDefaultEvents(users_id) {
     // RETURNING *
     return db.many(sql, {users_id})
 }
-
 module.exports = {
     list, update, create, deleteSQL, creatDefaultEvents
 }

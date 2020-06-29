@@ -41,7 +41,7 @@ function create( users_id, payload ){
     VALUES (${newValues.join(', ')})
     RETURNING *
     `
-    console.log(sql,keys,values)
+    // console.log(sql,keys,values)
     return db.one(sql, values)
 }
 function update(id, users_id, payload) {

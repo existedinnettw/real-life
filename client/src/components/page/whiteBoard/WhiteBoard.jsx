@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from 'react'
 
 import {
-    Row, Col, Table, Radio, Divider, InputNumber
+    Row, Col, Table, Radio, Divider, InputNumber, message
 } from 'antd';
 // import Button from 'react-bootstrap/Button'
 import {
@@ -9,6 +9,9 @@ import {
 } from '@ant-design/icons';
 import { Button } from 'antd';
 import 'antd/dist/antd.css'
+
+import Sound from 'react-sound';
+import sound from './bensound-summer.mp3';
 
 import Help from 'components/page/help/Help'
 
@@ -30,6 +33,7 @@ function WBGreet(props) {
     const [showHelp, setShowHelp] = useState(false)
     useEffect(
         () => {
+            message.info('click bulb to get help...', [3], /*onclose*/)
             const intervalId = setInterval(() => {
                 setNow(moment())
             }, 1000)
@@ -71,7 +75,7 @@ function WBGreet(props) {
                                 <Button
                                     style={{
                                         width: '5rem', height: '5rem',
-                                        border:'none',
+                                        border: 'none',
                                     }}
                                     ghost={true}
                                     icon={<BulbTwoTone
@@ -190,7 +194,8 @@ function WBChoice(props) {
             </Col>
             <Col
                 className="wb-text">
-                <InputNumber min={25} max={120} defaultValue={props.expectWorkTime}
+                {/* min={25} is ac */}
+                <InputNumber min={1} max={120} defaultValue={props.expectWorkTime}
                     onChange={(value) => props.setExpectWorkTime(value)}
                 /> min
                 </Col>
@@ -211,7 +216,7 @@ class WBStart extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            now: moment()
+            now: moment(),
         }
         this.interval = moment.duration(this.state.now.diff(this.props.startTime))
 
@@ -220,7 +225,8 @@ class WBStart extends Component {
         this.intervalId = setInterval(() => {
             this.setState({ now: moment() })
             this.interval = moment.duration(this.state.now.diff(this.props.startTime))
-        }, 1000)
+        }, 1000);
+        // console.log(this.state.play)
     }
     componentWillUnmount() {
         clearInterval(this.intervalId)
@@ -234,7 +240,8 @@ class WBStart extends Component {
         const props = this.props
         // console.log(this.interval.as('minutes'))
         let missionStr = `To do: ${props.workingEvent.summary}`
-        let timeStr = `${Math.ceil(props.expectWorkTime - this.interval.as('minutes'))} min left`
+        let leftMin = Math.ceil(props.expectWorkTime - this.interval.as('minutes'))
+        let timeStr = `${leftMin} min left`
         return (
             <div className="wb-start" >
                 <Col></Col>
@@ -259,7 +266,18 @@ class WBStart extends Component {
                         stop
                 </Button>
                 </Col>
-                <Col></Col>
+                <Col>
+                    {leftMin <= 0 &&
+                        <Sound
+                            // url="https://www.bensound.com/bensound-music/bensound-summer.mp3"
+                            url={sound}
+                            playStatus={Sound.status.PLAYING}
+                        // playFromPosition={300 /* in milliseconds */}
+                        // onLoading={this.handleSongLoading}
+                        // onPlaying={this.handleSongPlaying}
+                        // onFinishedPlaying={this.handleSongFinishedPlaying}
+                        />}
+                </Col>
             </div>
         )
     }

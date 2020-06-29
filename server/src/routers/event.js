@@ -30,7 +30,7 @@ eventRouter.post('/events', function(req,res,next){
         const userID= rst.id
         // console.log(req.query) //for get only
         // console.log(req.params) //for get only
-        console.log(req.body)
+        // console.log(req.body)
         // const {summary, init_time, due_time, target, purpose, expectTime}= req.body
         eventsModel.create(userID, req.body ).then(events=>{
             res.json(events) //return events

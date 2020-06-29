@@ -127,12 +127,12 @@ class CurrentMission extends Component {
                 upperBound = moment()
                 break
             case 'today':
-                //not use currently
+                //for perodic event
                 lowerBound = moment()
                 upperBound = moment().add(1, 'days')
                 break
             case 'oneWeek':
-                lowerBound = moment()
+                lowerBound = moment().add(1, 'days')
                 upperBound = moment().add(7, 'days')
                 break
             case 'oneMonth':
@@ -160,11 +160,12 @@ class CurrentMission extends Component {
         const loading = !!this.props.eventLoadingCount
         // console.log(this.props.eventLoadingCount)
         const outdatedDt = this.eventsFilter('outdated')
+        const todayDt = this.eventsFilter('today')
         const oneWeekDt = this.eventsFilter('oneWeek')
         const oneMonthDt = this.eventsFilter('oneMonth')
         const sixMonthDt = this.eventsFilter('6Month')
-        const dtArr = [outdatedDt, oneWeekDt, oneMonthDt, sixMonthDt]
-        const titleStrArr = ['outdated', 'one week', 'one month', 'six month']
+        const dtArr = [outdatedDt, todayDt, oneWeekDt, oneMonthDt, sixMonthDt]
+        const titleStrArr = ['outdated', 'today', 'one week', 'one month', 'six month']
         return (
             <div>
                 <Row justify='center'>
@@ -177,7 +178,7 @@ class CurrentMission extends Component {
                 </Row>
                 <div style={{ padding: '.3rem' }}></div>
 
-                <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
+                <Row justify='left' style={{ width: '90%', margin: '0 auto' }}>
                     {dtArr.map((el, idx) => {
                         return (
                             <React.Fragment key={idx}>

@@ -608,3 +608,12 @@ crontab 本身就是很複雜的功能，要用點選的可以，但是組合太
 cron的週期格子如果有值，表示它是更高一級的週期性job，e.g. 最大是day 有值，表示最長的週期是monthly，(不能完全說是monthly  job，因為可以在某一day 裡特定的多個hour做事，也可以1month裡，有多個day 做事)，或說at least monthly, at least monthly frequency
 
 ---
+
+
+
+6/29
+
+may do
+
+* sound control config in sql user model or in local
+* safty update sql model, when already deploy

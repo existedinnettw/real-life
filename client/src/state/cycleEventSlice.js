@@ -4,7 +4,7 @@ import parser from 'cron-parser'
 import moment from 'moment'
 
 import { listCycleEvents, createCycleEvent, delCycleEvent, updateCycleEvent } from "api/cycleEvent"
-import { ascDueTEventsSort, cycleEventsIdEventsFilter, noneOutdatedEventsFilter } from "util/filter"
+import { cycleEventsIdEventsFilter, noneOutdatedEventsFilter } from "util/filter"
 // import store from "state/store"
 import { addEvent } from "state/eventSlice";
 // import _ from 'lodash'
@@ -19,24 +19,24 @@ function createThreeEvents(response, thunkAPI) {
     const { dispatch, getState } = thunkAPI
     response.forEach((el, idx) => {
         let events = getState().event.events
-        // console.log(cycleEventsIdEventsFilter(events, el.id))
         events = noneOutdatedEventsFilter(cycleEventsIdEventsFilter(events, el.id))
-        // console.log('filtered', events)
+        // events = ascDueTEventsSort(events)
+        // console.log('filtered:', events)
 
         let initInterval = parser.parseExpression(el.init_cron)
         let dueInterval = parser.parseExpression(el.due_cron)
 
         for (let i = 0; i < 3; i++) {
             let nxtDueTime = moment(dueInterval.next().toDate())
-
-            // console.log('i=', i, events[i])
-            if (!!events[i]) {//check if undefine
-                // console.log('a event exist',nxtDueTime, moment.unix(events[i].due_time) )
-                if (nxtDueTime.isSame(moment.unix(events[i].due_time))) {
-                    // console.log('event of cycleEvent already crated')
-                    continue
-                }
+            let found= events.find((el) => {
+                return nxtDueTime.isSame(moment.unix(el.due_time))
+            })
+            // console.log('found:',found)
+            if (found) {
+                // console.log('event of cycleEvent already created')
+                continue
             }
+
 
             let payload = {
                 summary: el.summary,
@@ -48,7 +48,7 @@ function createThreeEvents(response, thunkAPI) {
                 cycle_events_id: el.id,
             }
             dispatch(addEvent(payload))
-        }
+        }//end for
     })
 }
 
@@ -95,7 +95,7 @@ const cycleEventSlice = createSlice({
             state.cycleEventLoadingCount += 1
         },
         [fetchCycleEvent.fulfilled]: (state, action) => {
-            state.cycleEvents = ascDueTEventsSort(action.payload)
+            state.cycleEvents = (action.payload)
             state.cycleEventLoadingCount -= 1
         },
         [fetchCycleEvent.rejected]: (state, action) => {
@@ -108,7 +108,7 @@ const cycleEventSlice = createSlice({
             state.cycleEventLoadingCount += 1
         },
         [addCycleEvent.fulfilled]: (state, action) => {
-            state.cycleEvents = ascDueTEventsSort([action.payload, ...state.cycleEvents])
+            state.cycleEvents = ([action.payload, ...state.cycleEvents])
             state.cycleEventLoadingCount -= 1
         },
         [addCycleEvent.rejected]: (state, action) => {
@@ -126,7 +126,7 @@ const cycleEventSlice = createSlice({
             let cycleEvents = state.cycleEvents.filter(e => {
                 return e.id !== action.payload.id
             })
-            state.cycleEvents = ascDueTEventsSort([action.payload, ...cycleEvents])  //check this
+            state.cycleEvents = ([action.payload, ...cycleEvents])  //check this
             state.cycleEventLoadingCount -= 1
             // console.log(state.cycleEvents)
         },

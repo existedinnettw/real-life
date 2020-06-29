@@ -52,7 +52,7 @@ cycleEventRouter.delete('/cycleEvents/:id', function(req,res,next){
     usersModel.list(email).then(rst=>{
         const userID= rst.id
         const {id} = req.params;
-        console.log(id,userID)
+        // console.log(id,userID)
         cycleEventsModel.deleteSQL(id, userID ).then(cycleEvents=>{
             res.json(cycleEvents) //return cycleEvents
         })

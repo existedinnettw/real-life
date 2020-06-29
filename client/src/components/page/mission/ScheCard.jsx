@@ -7,6 +7,7 @@ import { useDrag, useDrop } from "react-dnd";
 import { ItemTypes } from 'util/constant'
 
 import { styles } from './antStyle'
+import './mission.css'
 
 function DraggableCardDiv(props) {
     const [{ isDragging }, dragRef] = useDrag({
@@ -18,7 +19,8 @@ function DraggableCardDiv(props) {
 
     return (
         <div ref={dragRef} //
-            className={`ms__card-div ${props.event.is_today_event && 'ms__card-div--istoday'}`}
+            className={`ms__card-div ${props.event.cycle_events_id && 'ms__card-div--isCycled'} 
+            ${props.event.is_today_event && 'ms__card-div--istoday'}`}
             style={{
                 opacity: isDragging ? 0.5 : 1,
                 cursor: 'move',

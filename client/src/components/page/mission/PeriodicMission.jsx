@@ -269,7 +269,7 @@ class PeriodicMission extends Component {
                         <PWInputRow />
                     </Col>
                 </Row>
-                <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
+                <Row justify='left' style={{ width: '90%', margin: '0 auto' }}>
                     {dtArr.map((el, idx) => {
                         return (
                             <React.Fragment key={idx}>
