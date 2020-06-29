@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import {
     Row, Col, Divider,
-    Input, Button,  Card, List, Typography,  InputNumber
+    Input, Button, Card, List, Typography, InputNumber
 } from 'antd';
 import {
     PlusOutlined,
@@ -26,10 +26,10 @@ import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 
 import CurrentMission from './CurrentMission'
 import PeriodicMission from './PeriodicMission'
-import { todayEventsFilter,  } from "util/filter"
+import { todayEventsFilter, } from "util/filter"
 import { CSSTransition } from "react-transition-group";
 
-import {styles} from './antStyle'
+import { styles } from './antStyle'
 import './mission.css'
 
 const MyPreview = () => {
@@ -108,7 +108,7 @@ function TodayWorkDisp(props) {
                 <Col xs={24} style={{ padding: '0 1.5rem' }}>
                     {/* list is not response, maybe switch to table */}
                     <List
-                        gird={{column: 4}}
+                        gird={{ column: 4 }}
                         split={false}
                         dataSource={todayEvents}
                         header={
@@ -190,12 +190,16 @@ function EventsDisp(props) {
                 </Carousel.Item>
 
                 <Carousel.Item>
-                    <PeriodicMission />
+                    <DndProvider options={HTML5toTouch}>
+                        {/* <DndProvider backend={MultiBackend} options={HTML5toTouch}> */}
+                        <PeriodicMission />
+                        <MyPreview />
+                    </DndProvider>
                 </Carousel.Item>
 
-                <Carousel.Item>
+                {/* <Carousel.Item>
                     <MissionConfig />
-                </Carousel.Item>
+                </Carousel.Item> */}
 
             </Carousel>
         </motion.div>
@@ -231,7 +235,6 @@ class Mission extends Component {
         this.state = {
             dueMonth: 1,
             dueDay: 1,
-            workType: ['work', 'task', 'life'],
             inProp: false,
         }
     }

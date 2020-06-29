@@ -1,10 +1,23 @@
-
+import moment from 'moment'
 /****event filter and sort*** */
 export function idEventFilter(events,id ){
     let event=events.filter(e=>{
         return e.id===id
     })[0]
+    //in theory, event id is unique
     return event
+}
+export function cycleEventsIdEventsFilter(events, cycle_events_id ){
+    let filteredEvents=events.filter(e=>{
+        return e.cycle_events_id===cycle_events_id //if same return true
+    })
+    return filteredEvents
+}
+export function noneOutdatedEventsFilter(events ){
+    let filteredEvents=events.filter(e=>{
+        return moment.unix(e.due_time).isAfter(moment())
+    })
+    return filteredEvents
 }
 export function todayEventsFilter(events ){
     return events.filter(e=>{

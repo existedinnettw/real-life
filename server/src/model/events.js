@@ -19,13 +19,30 @@ function list(serchText = '', usersID) {
     return db.any(sql, [serchText, usersID])
 }
 
-function create(summary, init_time, due_time, target, purpose, expect_time, users_id) {
+// function create(summary, init_time, due_time, target, purpose, expect_time, users_id) {
+function create( users_id, payload ){
+    // const sql = `
+    // INSERT INTO events ($<this:name>)
+    // VALUES ($<summary>, $<init_time>, $<due_time>, $<target>, $<purpose>, $<expect_time>, $<users_id>)
+    // RETURNING *
+    // `
+    // return db.one(sql, { summary, init_time, due_time, target, purpose, expect_time, users_id })
+    
+    payload= {...payload,'users_id':users_id}
+    let newValues = []
+    keys = Object.keys(payload)
+    // let i
+    for (i = 0; i < keys.length; i++) {
+        newValues.push(`$${i + 1}`)
+    }
+    values = Object.values(payload)
     const sql = `
-    INSERT INTO events ($<this:name>)
-    VALUES ($<summary>, $<init_time>, $<due_time>, $<target>, $<purpose>, $<expect_time>, $<users_id>)
+    INSERT INTO events (${keys.join(', ')})
+    VALUES (${newValues.join(', ')})
     RETURNING *
     `
-    return db.one(sql, { summary, init_time, due_time, target, purpose, expect_time, users_id })
+    console.log(sql,keys,values)
+    return db.one(sql, values)
 }
 function update(id, users_id, payload) {
     //payload is object contain new event info (without id)

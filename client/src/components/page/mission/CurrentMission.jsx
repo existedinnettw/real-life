@@ -1,8 +1,8 @@
 
 import React, { Component, useState } from 'react'
 import {
-    Row, Col, Divider,
-    Input, DatePicker, Button, Affix, Card, List, Typography, Tooltip, InputNumber
+    Row, Col,
+    Input, DatePicker, Button, Affix, Tooltip, InputNumber
 } from 'antd';
 import {
     PlusOutlined,
@@ -10,22 +10,16 @@ import {
 } from '@ant-design/icons';
 import 'antd/dist/antd.css'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-// import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
+import { ScheCard, DropIcon } from './ScheCard'
 import { remB } from 'util/constant'
-import { motion } from "framer-motion"
 // import Background from './background.jpg';
 import { connect } from 'react-redux';
 import eventSlice, { fetchEvent, addEvent, modEvent, rmvEvent } from 'state/eventSlice'
 import moment from 'moment'
 
-import { ItemTypes } from 'util/constant'
-import { useDrag, useDrop } from "react-dnd";
 import { idEventFilter, unDoneEventsFilter } from "util/filter"
-import { CSSTransition } from "react-transition-group";
 
-import { styles } from './antStyle'
+
 import './mission.css'
 
 class RInputRow extends Component {
@@ -35,18 +29,18 @@ class RInputRow extends Component {
             summary: '', //or null, db col should be non null
             target: '',
             purpose: '',
-            initTime: moment(), //moment object, when transfer use moment.unix()
-            dueTime: moment().add(1, 'days'),
-            expectTime: 1.5
+            init_time: moment(), //moment object, when transfer use moment.unix()
+            due_time: moment().add(1, 'days'),
+            expect_time: 1.5
         }
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     handleSubmit() {
         // call redux action to call create api
-        const { initTime, dueTime } = { ...this.state }
+        const { init_time, due_time } = { ...this.state }
         let payload = { ...this.state }
-        payload.initTime = initTime.unix()
-        payload.dueTime = dueTime.unix()
+        payload.init_time = init_time.unix()
+        payload.due_time = due_time.unix()
         this.props.dispatch(addEvent(payload))
     }
 
@@ -75,18 +69,18 @@ class RInputRow extends Component {
 
                 <Col {...backBp} >
                     <DatePicker placeholder="init date" className="inputOption"
-                        value={this.state.initTime}
-                        onChange={(date, dS) => this.setState({ initTime: date })} />
+                        value={this.state.init_time}
+                        onChange={(date, dS) => this.setState({ init_time: date })} />
                 </Col>
                 <Col {...backBp} >
                     <DatePicker placeholder="due date" className="inputOption"
-                        value={this.state.dueTime}
-                        onChange={(date, dS) => this.setState({ dueTime: date })} />
+                        value={this.state.due_time}
+                        onChange={(date, dS) => this.setState({ due_time: date })} />
                 </Col>
                 <Col {...backBp} >
                     <Tooltip title={'expect time (hr)'}>
                         <InputNumber min={0.25} max={8} step={0.25}
-                            value={this.state.expectTime}
+                            value={this.state.expect_time}
                             formatter={value => {
                                 return `${value} hr`
                             }}
@@ -96,7 +90,7 @@ class RInputRow extends Component {
                             onChange={val => {
                                 // val => val.toString().replace(/\D/g,'')
                                 // console.log(val)
-                                this.setState({ expectTime: val })
+                                this.setState({ expect_time: val })
                             }}
                         />
                     </Tooltip>
@@ -121,85 +115,6 @@ RInputRow = connect(state => ({
 }))(RInputRow)
 
 
-
-function DraggableCardDiv(props) {
-    const [{ isDragging }, dragRef] = useDrag({
-        item: { type: ItemTypes.CARD, ...props },
-        collect: (monitor) => ({
-            isDragging: !!monitor.isDragging() //return true or false
-        })
-    });
-
-    return (
-        <div ref={dragRef} //
-            className={`ms__card-div ${props.event.is_today_event && 'ms__card-div--istoday'}`}
-            style={{
-                opacity: isDragging ? 0.5 : 1,
-                cursor: 'move',
-                // backgroundColor: props.event.is_today_event ? 'green' : 'white'
-            }}
-        >
-            {props.event.summary}
-
-        </div>
-    );
-};
-
-function ScheCard(props) {
-    let { titleStr, dataArr } = props
-    //render schedule card
-    const columns = dataArr.map((event, columnIndex) => {
-        const propsToColumn = { event };
-        return (
-            <div key={`column-${columnIndex}`}>
-                <DraggableCardDiv {...propsToColumn} />
-            </div>
-        )
-    });
-    return (
-        <Card
-            // loading={props.loading} //effect not good
-            className='ms__ant-card'
-            bodyStyle={styles.antCardBody}
-            headStyle={styles.antCardHeader}
-            title={titleStr}
-            style={styles.antCard}>
-            {/* <Card.Meta title={titleStr} style={{...styles.antCardHeader,...styles.antCardHeaderTitle}}/> */}
-            {columns}
-        </Card>
-    )
-}
-
-function DropIcon({ tooltipStr, onDrop, children }) {
-    //const [bottom, setBottom] = useState(0);
-    const [{ isOver, canDrop }, drop] = useDrop({
-        accept: ItemTypes.CARD, //this value will pass to item
-        drop: (item, mon) => {
-            //item is what the draggle item is, its property depend on its item object
-            //console.log('some dropped',item.event) //dispatch(rmvEvent()),
-            onDrop(item.event.id)
-        },
-        collect: (mon) => ({
-            isOver: !!mon.isOver(),
-            canDrop: !!mon.canDrop()
-        })
-    })
-    let className = 'interactive-icon-container ' //default
-    if (!isOver && canDrop) {
-        className += 'interactive-icon-container--can-drop'
-    } else if (isOver && canDrop) {
-        className += 'interactive-icon-container--hover'
-    }
-    return (
-        <Tooltip title={tooltipStr}>
-            <Button ref={drop}
-                className={className}
-            >
-                {children}
-            </Button>
-        </Tooltip>
-    )
-}
 class CurrentMission extends Component {
     eventsFilter(period) {
         let { events } = this.props
@@ -265,10 +180,14 @@ class CurrentMission extends Component {
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
                     {dtArr.map((el, idx) => {
                         return (
-                            <Col key={idx} xs={24} sm={12} lg={6}>
+                            <React.Fragment key={idx}>
                                 {!!el.length &&
-                                    <ScheCard loading={loading} titleStr={titleStrArr[idx]} dataArr={el} />}
-                            </Col>)
+                                    <Col xs={24} sm={12} lg={6}>
+                                        {!!el.length &&
+                                            <ScheCard loading={loading} titleStr={titleStrArr[idx]} dataArr={el} />}
+                                    </Col>}
+                            </React.Fragment>
+                        )
                     })}
                 </Row>
 

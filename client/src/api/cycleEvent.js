@@ -5,8 +5,8 @@ import axios from 'axios'
 
 const baseUrl = process.env.API_URL
 
-export function listEvents(searchText = '') {
-    let url = `${baseUrl}/events`
+export function listCycleEvents(searchText = '') {
+    let url = `${baseUrl}/cycleEvents`
     let query = []
     if (searchText)
         query.push(`searchText=${searchText}`);
@@ -31,8 +31,8 @@ export function listEvents(searchText = '') {
 
 }
 
-export function createEvent(payload) {
-    let url = `${baseUrl}/events`
+export function createCycleEvent(payload) {
+    let url = `${baseUrl}/cycleEvents`
     console.log(`Making POST request to: ${url} with payload`,payload)
     return axios.post(url, {
         ...payload
@@ -43,9 +43,9 @@ export function createEvent(payload) {
     });
 }
 
-export function updateEvent({id,...rest}){
+export function updateCycleEvent({id,...rest}){
     //should include event ID, id is event id
-    let url = `${baseUrl}/events/${id}`
+    let url = `${baseUrl}/cycleEvents/${id}`
     console.log(`Making put request to: ${url}`)
     let valueToModify=rest
     return axios.put(url,{
@@ -57,8 +57,8 @@ export function updateEvent({id,...rest}){
     })
 }
 
-export function delEvent(eventID){
-    let url = `${baseUrl}/events/${eventID}`
+export function delCycleEvent(eventID){
+    let url = `${baseUrl}/cycleEvents/${eventID}`
     console.log(`Making delet request to: ${url}`)
     return axios.delete(url, {
     }).then(function(res) {

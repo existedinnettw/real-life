@@ -7,8 +7,6 @@ import 'antd/dist/antd.css'
 
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
-import { fetchEvent } from 'state/eventSlice'
-import { checkLogin } from 'state/userSlice'
 
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faAlignLeft } from '@fortawesome/free-solid-svg-icons'
@@ -28,17 +26,7 @@ class NavBar extends Component {
             showNav: false,
         }
     }
-    componentWillMount() {
-        this.props.dispatch(checkLogin())
-        if (this.props.user.isLogin) {
-            this.props.dispatch(fetchEvent())
-        }
-    }
-    componentDidUpdate(prevProps) {
-        if (this.props.user.isLogin !== prevProps.user.isLogin) {
-            this.props.dispatch(fetchEvent())
-        }
-    }
+
 
     render() {
         return (

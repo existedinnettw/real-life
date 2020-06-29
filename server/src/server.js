@@ -1,6 +1,7 @@
 const express = require('express')
 const { eventRouter } = require("./routers/event.js")
 const { authRouter } = require("./routers/auth.js")
+const {cycleEventRouter} = require("./routers/cycleEvent")
 const { isAuthenticated } = require('./routers/auth')
 const path = require('path');
 const { port, callbackURL } = require('../config')
@@ -38,6 +39,7 @@ app.get('/*/static/*', function (req, res) {
 
 //app.use('/api/*', cors())
 app.use('/api', isAuthenticated, eventRouter)
+app.use('/api', isAuthenticated, cycleEventRouter)
 
 app.use('/auth', authRouter)//the oauth is impossible to be cors
 

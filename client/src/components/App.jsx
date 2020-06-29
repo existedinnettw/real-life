@@ -1,5 +1,10 @@
 import React, { Component } from 'react'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
+import { connect } from 'react-redux';
+import { fetchEvent } from 'state/eventSlice'
+import { fetchCycleEvent } from 'state/cycleEventSlice'
+import { checkLogin } from 'state/userSlice'
+
 import NavBar from './navBar/NavBar'
 import WhiteBoard from './page/whiteBoard/WhiteBoard'
 import Mission from './page/mission/Mission'
@@ -20,6 +25,7 @@ class Layout extends Component {
             'Mission': '/mission/',
         }
     }
+
     render() {
         return (
             <div style={this.state.layoutStyle}>
@@ -36,8 +42,20 @@ class Layout extends Component {
     }
 }
 
-
 class App extends Component {
+    componentWillMount() {
+        this.props.dispatch(checkLogin())
+        if (this.props.user.isLogin) {
+            this.props.dispatch(fetchEvent())
+            this.props.dispatch(fetchCycleEvent())
+        }
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.user.isLogin !== prevProps.user.isLogin) {
+            this.props.dispatch(fetchEvent())
+            this.props.dispatch(fetchCycleEvent())
+        }
+    }
     render() {
         return (
             <BrowserRouter>
@@ -46,4 +64,7 @@ class App extends Component {
         )
     }
 }
+App = connect(state => ({
+    ...state,
+}))(App)
 export default App

@@ -30,12 +30,12 @@ CREATE TABLE users(
 CREATE TABLE cycle_events(
     id          SERIAL PRIMARY KEY NOT NULL,
     summary     text NOT NULL,
-    init_corn   text NOT NULL,
-    due_corn    text NOT NULL,
+    init_cron   text NOT NULL,
+    due_cron    text NOT NULL,
     target      text,
     purpose     text,
     expect_time float,
-    users_id     INTEGER REFERENCES users(id)
+    users_id    INTEGER REFERENCES users(id)
 );
 
 --- Create events
@@ -51,8 +51,8 @@ CREATE TABLE events(
     time_spent      float NOT NULL DEFAULT 0,
     is_today_event  BOOLEAN NOT NULL DEFAULT FALSE,
     users_id        INTEGER REFERENCES users(id),
-    cycle_events_id INTEGER REFERENCES cycle_events(id),
-    p_event_id      INTEGER REFERENCES events(id)
+    cycle_events_id INTEGER REFERENCES cycle_events(id) ON DELETE SET NULL,
+    p_event_id      INTEGER REFERENCES events(id) ON DELETE SET NULL
 );
 
 `
@@ -62,8 +62,8 @@ INSERT INTO users (email)
 VALUES ('existedinnettw@gmail.com');
 
 --- Populate dummy data to cycleEvents
-INSERT INTO cycle_events (summary, init_corn, due_corn, target, expect_time, users_id)
-VALUES ('brush tooth and bash, eating breakfast', '* 7 * * *', '* 8 * * *', 'done and clean', 0.83, 1);
+INSERT INTO cycle_events (summary, init_cron, due_cron, target, expect_time, users_id)
+VALUES ('brush tooth and bash, eating breakfast', '0 7 * * *', '0 8 * * *', 'done and clean', 0.83, 1);
 
 --- Populate dummy data to events
 INSERT INTO events (summary, init_time, due_time, target, expect_time, users_id)

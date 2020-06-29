@@ -1,5 +1,6 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import eventSlice from './eventSlice'
+import cycleEventSlice from './cycleEventSlice'
 import userSlice from './userSlice'
 
 const middleware = [
@@ -12,6 +13,7 @@ const store = configureStore({
     reducer: {
         user: userSlice.reducer,
         event: eventSlice.reducer,
+        cycleEvent: cycleEventSlice.reducer
     },
     middleware,
 });

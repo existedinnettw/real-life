@@ -221,12 +221,12 @@ all the time in unix timestamp
 template of events
 
 1. id
-2. **init_corn**
+2. **summary**
+3. **init_cron**
    1. use corn-parser to know when to parse
    2. corn 的符號非固定 ("/2" "2,4" )，所以還是用char 而非int array好了
    3. 統計了話應該不會用到這個table，用真正產生的event就好
-3. **due_corn**
-4. **summary**
+4. **due_cron**
 5. **target**
 6. **purpose**
 7. **expect_time**

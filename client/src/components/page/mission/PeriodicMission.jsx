@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react'
 
 import {
     Row, Col,
-    Input, Collapse, Alert, Button, Affix, Card, List, Typography, Tooltip, InputNumber, Radio
+    Input, Collapse, Button, Affix, Card, List, Typography, InputNumber, Radio
 } from 'antd';
 import {
     PlusOutlined, DeleteOutlined, WarningTwoTone
@@ -13,14 +13,11 @@ import parser from 'cron-parser'
 
 // import { CalendarOutlined, RedoOutlined, ToolOutlined } from '@ant-design/icons'
 import { remB } from 'util/constant'
-// import { motion } from "framer-motion"
-// import Background from './background.jpg';
+import { ScheCard, DropIcon } from './ScheCard'
 import { connect } from 'react-redux';
-import eventSlice, { fetchEvent, addEvent, modEvent, rmvEvent } from 'state/eventSlice'
+import { addCycleEvent, modCycleEvent, rmvCycleEvent } from 'state/cycleEventSlice'
 import moment from 'moment'
 
-// import { ItemTypes } from 'util/constant'
-// import { useDrag, useDrop } from "react-dnd";
 // import { idEventFilter, unDoneEventsFilter } from "util/filter"
 // import { CSSTransition } from "react-transition-group";
 
@@ -31,7 +28,7 @@ import { useEffect } from 'react';
 
 function CronTabInput(props) {
     const [value, setValue] = useState(1)
-    const [min, setMin] = useState('*')
+    const [min, setMin] = useState('0')
     const [hr, setHr] = useState('7')
     const [day, setDay] = useState('*')
     const [month, setMonth] = useState('*')
@@ -46,9 +43,11 @@ function CronTabInput(props) {
 
     useEffect(() => {
         try {
-            const interval = moment(parser.parseExpression(`${min} ${hr} ${day} ${month} ${weekDay}`).next().toDate());
+            const cronStr = `${min} ${hr} ${day} ${month} ${weekDay}`
+            const interval = moment(parser.parseExpression(cronStr).next().toDate());
             setInterval(interval)
             // console.log(interval.next().toDate())
+            props.setCron(cronStr)
         } catch (err) {
             // console.log(err)
             console.log('Error: ' + err.message);
@@ -137,19 +136,15 @@ class PWInputRow extends Component {
             summary: '', //or null, db col should be non null
             target: '',
             purpose: '',
-            initTime: moment(), //moment object, when transfer use moment.unix()
-            dueTime: moment().add(1, 'days'),
-            expectTime: 1.5
+            init_cron: '', //moment object, when transfer use moment.unix()
+            due_cron: '',
+            expect_time: 1.5
         }
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     handleSubmit() {
-        // call redux action to call create api
-        const { initTime, dueTime } = { ...this.state }
         let payload = { ...this.state }
-        payload.initTime = initTime.unix()
-        payload.dueTime = dueTime.unix()
-        this.props.dispatch(addEvent(payload))
+        this.props.dispatch(addCycleEvent(payload))
     }
 
     // change datepicker to cron picker
@@ -177,14 +172,18 @@ class PWInputRow extends Component {
                 </Col>
 
                 <Col {...cronBP} >
-                    <CronTabInput header='init crontab' />
+                    <CronTabInput header='init crontab' setCron={(cronVal) => {
+                        this.setState({ init_cron: cronVal })
+                    }} />
                 </Col>
                 <Col {...cronBP} >
-                    <CronTabInput header='due crontab' />
+                    <CronTabInput header='due crontab' setCron={(cronVal) => {
+                        this.setState({ due_cron: cronVal })
+                    }} />
                 </Col>
                 <Col {...backBp} >
                     <InputNumber min={0.25} max={8} step={0.25}
-                        value={this.state.expectTime}
+                        value={this.state.expect_time}
                         formatter={value => {
                             return `${value} hr`
                         }}
@@ -194,7 +193,7 @@ class PWInputRow extends Component {
                         onChange={val => {
                             // val => val.toString().replace(/\D/g,'')
                             // console.log(val)
-                            this.setState({ expectTime: val })
+                            this.setState({ expect_time: val })
                         }}
                     />
                 </Col>
@@ -223,7 +222,41 @@ class PeriodicMission extends Component {
     constructor(props) {
         super(props)
     }
+    cycleEventsParser() {
+        let { cycleEvents } = this.props
+        let dailyArr, weeklyArr, monthlyArr, yearlyArr //at least
+        [dailyArr, weeklyArr, monthlyArr, yearlyArr] = [[], [], [], []] //at least
+
+        cycleEvents.forEach((el, idx) => {
+            const dueCronArr = el.due_cron.split(" ")
+            if (dueCronArr[4 - 1] !== '*') {
+                yearlyArr.push(el)
+                return
+            }
+            else if (dueCronArr[3 - 1] !== '*') {
+                monthlyArr.push(el)
+                return
+            }
+            else if (dueCronArr[5 - 1] !== '*') {
+                weeklyArr.push(el)
+                return
+            }
+            else if (dueCronArr[2 - 1] !== '*') {
+                dailyArr.push(el)
+                return
+            }
+            else {
+                console.log('wrong input')
+                return
+            }
+        })
+        //console.log(finEvents)
+        return [dailyArr, weeklyArr, monthlyArr, yearlyArr]
+    }
+
     render() {
+        const dtArr = this.cycleEventsParser()
+        const titleStrArr = ['at least daily', 'at least weekly', 'at least monthly', 'at least yearly']
         return (
             <div>
                 <Row justify='center'>
@@ -232,51 +265,43 @@ class PeriodicMission extends Component {
                     </Col>
                 </Row>
                 <Row justify='center' >
-                    <Col xs={21} >
+                    <Col >
                         <PWInputRow />
                     </Col>
                 </Row>
                 <Row justify='center' style={{ width: '90%', margin: '0 auto' }}>
-                    <Col xs={24} md={12}>
-                        <Card
-                            bodyStyle={styles.antCardBody}
-                            className='ms__ant-card'
-                            title='Daily' style={{ width: '90%' }}>
-                            {/* <List
-                                bordered
-                                dataSource={['item1', 'item2', 'item3']}
-                                renderItem={item => (
-                                    <List.Item>
-                                        {item}
-                                    </List.Item>
-                                )}
-                            /> */}
-                        </Card>
-                    </Col>
-                    <Col xs={24} md={12}>
-                        <Card
-                            className='ms__ant-card'
-                            bodyStyle={styles.antCardBody}
-                            title='Weekly' style={{ width: '90%' }}>
-                            {/* <List
-                                bordered
-                                dataSource={['item1', 'item2', 'item3']}
-                                renderItem={item => (
-                                    <List.Item>
-                                        {item}
-                                    </List.Item>
-                                )}
-                            /> */}
-                        </Card>
-                    </Col>
+                    {dtArr.map((el, idx) => {
+                        return (
+                            <React.Fragment key={idx}>
+                                {!!el.length &&
+                                    <Col xs={24} sm={12} lg={6}>
+                                        {!!el.length &&
+                                            <ScheCard titleStr={titleStrArr[idx]} dataArr={el} />}
+                                    </Col>}
+                            </React.Fragment>
+                        )
+                    })}
                 </Row>
-                <Row justify='center' style={{ width: '80%', margin: '0 auto' }}>
-                    <Col><DeleteOutlined className='interactive-icon' /></Col>
-                </Row>
+                <Affix offsetBottom={0}>
+                    <Row justify='left' style={{
+                        width: '80%',
+                        margin: '0.5rem 0rem .5rem 1rem'
+                    }}
+                    >
+                        <Col>
+                            <DropIcon tooltipStr={'drag event over to delete it'}
+                                onDrop={(eID) => {
+                                    this.props.dispatch(rmvCycleEvent(eID))
+                                }}>
+                                <DeleteOutlined className='interactive-icon' />
+                            </DropIcon>
+                        </Col>
+                    </Row>
+                </Affix>
             </div>
         )
     }
 }
 export default PeriodicMission = connect(state => ({
-    ...state.event
+    ...state.cycleEvent
 }))(PeriodicMission)

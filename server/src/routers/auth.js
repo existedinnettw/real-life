@@ -2,6 +2,7 @@ const express = require('express')
 const passport = require('passport')
 const {callbackURL} = require('../../config')
 const eventsModel = require('../model/events')
+const cycleEvnetsModel =require('../model/cycleEvents')
 const usersModel = require('../model/users')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
@@ -54,6 +55,7 @@ authRouter.get('/islogin', isAuthenticated, function(req,res){
             usersModel.create(email).then(rst=>{
                 const userID=rst.id
                 eventsModel.creatDefaultEvents(userID)
+                cycleEvnetsModel.creatDefaultEvents(userID)
             })
         }
     })

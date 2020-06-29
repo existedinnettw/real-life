@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const {isAuthenticated} = require('./auth')
 const usersModel = require('../model/users')
 const eventsModel = require('../model/events')
-const cycleEventsModel= require('../model/cycleEvents')
 
 let eventRouter= express.Router()
 
@@ -31,9 +30,9 @@ eventRouter.post('/events', function(req,res,next){
         const userID= rst.id
         // console.log(req.query) //for get only
         // console.log(req.params) //for get only
-        // console.log(req.body)
-        const {summary, initTime, dueTime, target, purpose, expectTime}= req.body
-        eventsModel.create(summary, initTime, dueTime, target, purpose, expectTime, userID ).then(events=>{
+        console.log(req.body)
+        // const {summary, init_time, due_time, target, purpose, expectTime}= req.body
+        eventsModel.create(userID, req.body ).then(events=>{
             res.json(events) //return events
         })
         
@@ -63,17 +62,6 @@ eventRouter.delete('/events/:id', function(req,res,next){
     }).catch(next) //to error handle
 })
 
-/*************************************cycleEvents**********************************/
-eventRouter.get('/cycleEvents' ,function(req, res, next){
-    const email=req.user.emails[0].value 
-    usersModel.list(email).then(rst=>{
-        const userID= rst.id
-        const serchText= req.query.serchText
-        cycleEventsModel.list(serchText,userID).then(events=>{
-            res.json(events)
-        })
-    }).catch(next) //to error handle
-})
 
 
 module.exports= {

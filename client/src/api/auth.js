@@ -3,7 +3,6 @@ import axios from 'axios'
 const baseUrl = process.env.BASE_URL
 
 export function checkLoginByAPI() {
-    //let {summary, target, purpose, initTime, dueTime, expectTime }=payload
     let url = `${baseUrl}/auth/islogin`
     console.log(`Making GET request to: ${url} `)
     return axios.get(url
