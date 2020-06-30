@@ -15,12 +15,21 @@ const cycleEventState = {
     cycleEvents: [],
 };
 
-function createThreeEvents(response, thunkAPI) {
+function until(conditionFunction) {
+    //https://stackoverflow.com/a/52657929
+    const poll = resolve => {
+        if (conditionFunction()) resolve();
+        else setTimeout(_ => poll(resolve), 400);
+    }
+    return new Promise(poll);
+}
+
+async function createThreeEvents(response, thunkAPI) {
     const { dispatch, getState } = thunkAPI
     // mutex, may be use signal?
-    while(getState().event.eventLoadingCount){
-        
-    }
+    // Promise.all()
+    await until(()=>getState().event.eventLoadingCount===0)
+    console.log('waited')
     response.forEach((el, idx) => {
         let events = getState().event.events
         events = noneOutdatedEventsFilter(cycleEventsIdEventsFilter(events, el.id))
@@ -32,7 +41,7 @@ function createThreeEvents(response, thunkAPI) {
 
         for (let i = 0; i < 3; i++) {
             let nxtDueTime = moment(dueInterval.next().toDate())
-            let found= events.find((el) => {
+            let found = events.find((el) => {
                 return nxtDueTime.isSame(moment.unix(el.due_time))
             })
             // console.log('found:',found)
@@ -83,8 +92,10 @@ export const rmvCycleEvent = createAsyncThunk('cycleEvent/rmvCycleEvent',
     // https://stackoverflow.com/questions/19898274/on-delete-set-null-in-postgres
     async (cycleEventID, thunkAPI) => {
         const response = await delCycleEvent(cycleEventID) //should no respond
-        while(thunkAPI.getState().event.eventLoadingCount){} 
+
+        await until(()=>thunkAPI.getState().event.eventLoadingCount===0)
         thunkAPI.dispatch(fetchEvent()) //direct modify cycleID is actually better
+
         return response
     }
 )

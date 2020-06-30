@@ -636,7 +636,13 @@ may do
 * accessibility 要快，user 想要立刻馬上知道這個東西是什麼，即使google login 已經非常快，或是有隱私、反壟斷...因素不想登入，至少有兩個user 要求 guest mode。我認為主要的好處還是guest 可以讓user 馬上的得到 操作制約，大增留下來的機率
   * 實踐非常煩，要麼用不同的api，要麼用前端自己的fake data，action request 直接return ，且寫另一組logic
 
+---
 
+can't use busy waitning, or the page will shutdown
+
+[Modern solution using Promise](https://stackoverflow.com/a/52657929)
+
+我應該練100道 Promise
 
 
 
