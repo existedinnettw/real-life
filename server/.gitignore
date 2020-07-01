@@ -3,3 +3,4 @@
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+/client_secret_750299718967-6jdnuop6jat8uql8gsstjuvju7llmcqj.apps.googleusercontent.com.json
