@@ -1,26 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# client
-## dependencies
-/client/node_modules
-
-## production
-/client/build
-
-# server
-/server/node_modules
-/server/build
-/server/dist
-
-# misc
-*.env.local
-*.env.development.local
-*.env.test.local
-*.env.production.local
 
 # develop only
-/learn.md
-/test-GC_API
-/learn.assets
-/.vscode
-/.memo-clock_bp
+learn.md
+learn.assets
+
+test-GC_API
+
+.vscode
+
+memo-clock_bp.bmpr
+bp.egpz
